@@ -1,7 +1,6 @@
 package jagongadpro.keranjang.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.stereotype.Controller;
@@ -16,18 +15,19 @@ public class ShoppingCartController {
         return "ShoppingCart";
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addItemToCart() {
-        return ResponseEntity.ok("Hello World");
+    @GetMapping("/add")
+    public ResponseEntity<String> getAddItemForm() {
+        return ResponseEntity.ok("This is a example POST to add an item.");
     }
-
-    @PostMapping("/remove")
-    public ResponseEntity<String> removeItemFromCart() {
-        return ResponseEntity.ok("Hello World");
+    
+    @GetMapping("/remove")
+    public ResponseEntity<String> getRemoveItemForm() {
+        return ResponseEntity.ok("This is a example POST to remove an item.");
     }
-
-    @PostMapping("/update")
-    public ResponseEntity<String> updateItemInCart() {
-        return ResponseEntity.ok("Hello World");
+    
+    @GetMapping("/update")
+    public ResponseEntity<String> getUpdateItemForm() {
+        return ResponseEntity.ok("This is a example POST to update an item.");
     }
+    
 }

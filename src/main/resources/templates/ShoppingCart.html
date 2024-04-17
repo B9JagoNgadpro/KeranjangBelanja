@@ -11,6 +11,12 @@
         .cart-item {
             margin-bottom: 10px;
         }
+        .form-button {
+            display: inline;
+        }
+        .btn {
+            margin-left: 10px; 
+        }
     </style>
 </head>
 <body>
@@ -21,9 +27,42 @@
         </div>
         <div>
             <ul class="list-group">
-                <li class="list-group-item cart-item">Item 1 <button class="btn btn-primary float-right">Add to Cart</button></li>
-                <li class="list-group-item cart-item">Item 2 <button class="btn btn-primary float-right">Add to Cart</button></li>
-                <li class="list-group-item cart-item">Item 3 <button class="btn btn-primary float-right">Add to Cart</button></li>
+                <li class="list-group-item cart-item">
+                    Item 1 
+                    <form th:action="@{/api/cart/add}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-primary float-right">Add Item</button>
+                    </form>
+                    <form th:action="@{/api/cart/update}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-warning float-right">Update Item</button>
+                    </form>
+                    <form th:action="@{/api/cart/remove}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-danger float-right">Remove Item</button>
+                    </form>
+                </li>
+                <li class="list-group-item cart-item">
+                    Item 2
+                    <form th:action="@{/api/cart/add}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-primary float-right">Add Item</button>
+                    </form>
+                    <form th:action="@{/api/cart/update}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-warning float-right">Update Item</button>
+                    </form>
+                    <form th:action="@{/api/cart/remove}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-danger float-right">Remove Item</button>
+                    </form>
+                </li>
+                <li class="list-group-item cart-item">
+                    Item 3
+                    <form th:action="@{/api/cart/add}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-primary float-right">Add Item</button>
+                    </form>
+                    <form th:action="@{/api/cart/update}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-warning float-right">Update Item</button>
+                    </form>
+                    <form th:action="@{/api/cart/remove}" method="get" class="form-button">
+                        <button type="submit" class="btn btn-danger float-right">Remove Item</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>
