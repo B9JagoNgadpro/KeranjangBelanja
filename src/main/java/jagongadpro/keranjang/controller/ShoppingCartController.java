@@ -16,17 +16,17 @@ public class ShoppingCartController {
         return "ShoppingCart";
     }
 
-    @PostMapping(value = "/add")
+    @PostMapping("/add")
     public ResponseEntity<String> addItemToCart() {
         return ResponseEntity.ok("Hello World");
     }
 
-    @PostMapping(value = "/remove")
+    @PostMapping("/remove")
     public ResponseEntity<String> removeItemFromCart() {
         return ResponseEntity.ok("Hello World");
     }
 
-    @PostMapping(value = "/update")
+    @PostMapping("/update")
     public ResponseEntity<String> updateItemInCart() {
         return ResponseEntity.ok("Hello World");
     }
