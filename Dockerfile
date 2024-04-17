@@ -11,6 +11,6 @@ ENV JDBC_DATABASE_USERNAME ${JDBC_DATABASE_USERNAME}
 
 WORKDIR /app
 RUN ls -al
-COPY ./keranjang-0.0.1-SNAPSHOT.jar /app
+COPY ./*.jar /app
 EXPOSE 8080
 CMD ["java","-jar","keranjang-0.0.1-SNAPSHOT.jar"]
