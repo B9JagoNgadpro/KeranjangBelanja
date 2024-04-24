@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ShoppingCartService {
@@ -16,13 +17,19 @@ public class ShoppingCartService {
         this.shoppingCartRepository = ShoppingCartRepository.getInstance();
     }
 
+    // Konstruktor tambahan untuk testing
+    public ShoppingCartService(ShoppingCartRepository repository) {
+        this.shoppingCartRepository = repository;
+    }
+
+
     public ShoppingCart addItem(int itemId, int quantity) {
         return shoppingCartRepository.addItem(itemId, quantity);
     }
 
     public List<ShoppingCart> findAllItems() {
-        List<ShoppingCart> allItems = new ArrayList<>(shoppingCartRepository.getCartItems().values());
-        return allItems;
+        Map<Integer, ShoppingCart> items = shoppingCartRepository.getAllItems();
+        return new ArrayList<>(items.values());
     }
 
     public ShoppingCart updateItem(int itemId, int quantity) {
