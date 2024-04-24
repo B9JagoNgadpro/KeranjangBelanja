@@ -11,10 +11,10 @@ public class ShoppingCartRepository {
     private static ShoppingCartRepository instance;
     private Map<Integer, ShoppingCart> cartItems = new HashMap<>();
 
-    // Singleton pattenr
+    // Singleton pattern
     private ShoppingCartRepository() {}
 
-    // Public method untuk global access
+    // Singleton global access
     public static synchronized ShoppingCartRepository getInstance() {
         if (instance == null) {
             instance = new ShoppingCartRepository();
@@ -51,8 +51,11 @@ public class ShoppingCartRepository {
         cartItems.remove(itemId);
     }
 
+    public Map<Integer, ShoppingCart> getAllItems() {
+        return new HashMap<>(cartItems);
+    }
+
     public static synchronized void resetInstance() {
         instance = null;
     }
-    
 }

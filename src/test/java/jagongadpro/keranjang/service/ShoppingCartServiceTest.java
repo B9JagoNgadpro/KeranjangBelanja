@@ -4,84 +4,100 @@ import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import java.util.ArrayList;
-import java.util.Arrays;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class ShoppingCartServiceTest {
+
+    private ShoppingCartService shoppingCartService;
 
     @Mock
     private ShoppingCartRepository shoppingCartRepository;
 
-    @InjectMocks
-    private ShoppingCartService shoppingCartService;
-
-    @SuppressWarnings("deprecation")
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    void setUp() {
+        shoppingCartService = new ShoppingCartService(shoppingCartRepository);
     }
 
     @Test
-    public void testAddItem() {
-        ShoppingCartItem item = new ShoppingCartItem(101, 5);
-        when(shoppingCartRepository.addItem(item)).thenReturn(item);
-        
-        ShoppingCartItem result = shoppingCartService.addItem(item);
-        
-        verify(shoppingCartRepository, times(1)).addItem(item);
-        assertEquals(item, result);
+    void testAddItem() {
+        // Setup
+        ShoppingCart cart = new ShoppingCart(101, 5);
+        when(shoppingCartRepository.addItem(101, 5)).thenReturn(cart);
+
+        // Execution
+        ShoppingCart result = shoppingCartService.addItem(101, 5);
+
+        // Assertions
+        assertEquals(cart, result);
+        verify(shoppingCartRepository, times(1)).addItem(101, 5);
     }
 
     @Test
-    public void testFindAllItems() {
-        ShoppingCartItem item1 = new ShoppingCartItem(101, 5);
-        ShoppingCartItem item2 = new ShoppingCartItem(102, 3);
-        List<ShoppingCartItem> itemList = Arrays.asList(item1, item2);
-        when(shoppingCartRepository.findAllItems()).thenReturn(itemList.iterator());
-        
-        List<ShoppingCartItem> result = shoppingCartService.findAllItems();
-        
-        verify(shoppingCartRepository, times(1)).findAllItems();
+    void testFindAllItems() {
+        // Setup
+        ShoppingCart cart1 = new ShoppingCart(101, 5);
+        ShoppingCart cart2 = new ShoppingCart(102, 3);
+        Map<Integer, ShoppingCart> items = new HashMap<>();
+        items.put(101, cart1);
+        items.put(102, cart2);
+        when(shoppingCartRepository.getAllItems()).thenReturn(items);
+
+        // Execution
+        List<ShoppingCart> result = shoppingCartService.findAllItems();
+
+        // Assertions
         assertEquals(2, result.size());
-        assertEquals(item1, result.get(0));
-        assertEquals(item2, result.get(1));
+        assertTrue(result.contains(cart1) && result.contains(cart2));
+        verify(shoppingCartRepository, times(1)).getAllItems();
     }
 
     @Test
-    public void testUpdateItem() {
-        ShoppingCartItem item = new ShoppingCartItem(101, 10);
-        when(shoppingCartRepository.updateItem(101, item)).thenReturn(item);
-        
-        ShoppingCartItem result = shoppingCartService.updateItem(101, item);
-        
-        verify(shoppingCartRepository, times(1)).updateItem(101, item);
-        assertEquals(item, result);
+    void testUpdateItem() {
+        // Setup
+        ShoppingCart cart = new ShoppingCart(101, 10);
+        when(shoppingCartRepository.updateItem(101, 10)).thenReturn(cart);
+
+        // Execution
+        ShoppingCart result = shoppingCartService.updateItem(101, 10);
+
+        // Assertions
+        assertEquals(cart, result);
+        verify(shoppingCartRepository, times(1)).updateItem(101, 10);
     }
 
     @Test
-    public void testDeleteItem() {
+    void testDeleteItem() {
+        // Setup
         doNothing().when(shoppingCartRepository).removeItem(101);
-        
+
+        // Execution
         shoppingCartService.deleteItem(101);
-        
+
+        // Verification
         verify(shoppingCartRepository, times(1)).removeItem(101);
     }
 
     @Test
-    public void testFindItemById() {
-        ShoppingCartItem item = new ShoppingCartItem(101, 5);
-        when(shoppingCartRepository.findItemById(101)).thenReturn(item);
-        
-        ShoppingCartItem result = shoppingCartService.findItemById(101);
-        
-        verify(shoppingCartRepository, times(1)).findItemById(101);
-        assertEquals(item, result);
+    void testFindItemById() {
+        // Setup
+        ShoppingCart cart = new ShoppingCart(101, 5);
+        when(shoppingCartRepository.getItem(101)).thenReturn(cart);
+
+        // Execution
+        ShoppingCart result = shoppingCartService.findItemById(101);
+
+        // Assertions
+        assertEquals(cart, result);
+        verify(shoppingCartRepository, times(1)).getItem(101);
     }
 }

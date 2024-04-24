@@ -1,40 +1,46 @@
-// package jagongadpro.keranjang.service;
+package jagongadpro.keranjang.service;
 
-// import jagongadpro.keranjang.model.ShoppingCartItem;
-// import jagongadpro.keranjang.repository.ShoppingCartRepository;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Service;
+import jagongadpro.keranjang.model.ShoppingCart;
+import jagongadpro.keranjang.repository.ShoppingCartRepository;
+import org.springframework.stereotype.Service;
 
-// import java.util.ArrayList;
-// import java.util.Iterator;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-// @Service
-// public class ShoppingCartService {
+@Service
+public class ShoppingCartService {
 
-//     @Autowired
-//     private ShoppingCartRepository shoppingCartRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
 
-//     public ShoppingCartItem addItem(ShoppingCartItem item) {
-//         return shoppingCartRepository.addItem(item);
-//     }
+    public ShoppingCartService() {
+        this.shoppingCartRepository = ShoppingCartRepository.getInstance();
+    }
 
-//     public List<ShoppingCartItem> findAllItems() {
-//         Iterator<ShoppingCartItem> itemIterator = shoppingCartRepository.findAllItems();
-//         List<ShoppingCartItem> allItems = new ArrayList<>();
-//         itemIterator.forEachRemaining(allItems::add);
-//         return allItems;
-//     }
+    // Konstruktor tambahan untuk testing
+    public ShoppingCartService(ShoppingCartRepository repository) {
+        this.shoppingCartRepository = repository;
+    }
 
-//     public ShoppingCartItem updateItem(String itemId, ShoppingCartItem item) {
-//         return shoppingCartRepository.updateItem(itemId, item);
-//     }
 
-//     public void deleteItem(String itemId) {
-//         shoppingCartRepository.removeItem(itemId);
-//     }
+    public ShoppingCart addItem(int itemId, int quantity) {
+        return shoppingCartRepository.addItem(itemId, quantity);
+    }
 
-//     public ShoppingCartItem findItemById(String itemId) {
-//         return shoppingCartRepository.findItemById(itemId);
-//     }
-// }
+    public List<ShoppingCart> findAllItems() {
+        Map<Integer, ShoppingCart> items = shoppingCartRepository.getAllItems();
+        return new ArrayList<>(items.values());
+    }
+
+    public ShoppingCart updateItem(int itemId, int quantity) {
+        return shoppingCartRepository.updateItem(itemId, quantity);
+    }
+
+    public void deleteItem(int itemId) {
+        shoppingCartRepository.removeItem(itemId);
+    }
+
+    public ShoppingCart findItemById(int itemId) {
+        return shoppingCartRepository.getItem(itemId);
+    }
+}
