@@ -47,7 +47,7 @@ public class ShoppingCartRepositoryTest {
 
     @Test
     public void testRemoveItem() {
-        repository.addItem(101, 2);
+        repository.addItem(101, 3);
         repository.removeItem(101);
         ShoppingCart cart = repository.getItem(101);
         assertNull(cart);
