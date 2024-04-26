@@ -12,7 +12,7 @@ public class ShoppingCartRepository {
     private Map<Integer, ShoppingCart> cartItems = new HashMap<>();
 
     // Singleton pattern
-    private ShoppingCartRepository() {}
+    //private ShoppingCartRepository() {}
 
     // Singleton global access
     public static synchronized ShoppingCartRepository getInstance() {
