@@ -3,6 +3,8 @@ package jagongadpro.keranjang.service;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -11,17 +13,14 @@ import java.util.Map;
 @Service
 public class ShoppingCartService {
 
-    private final ShoppingCartRepository shoppingCartRepository;
-    private final BillingStrategy billingStrategy;
-    private final PricingService pricingService;
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
 
-    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
-                               BillingStrategy billingStrategy,
-                               PricingService pricingService) {
-        this.shoppingCartRepository = shoppingCartRepository;
-        this.billingStrategy = billingStrategy;
-        this.pricingService = pricingService;
-    }
+    @Autowired
+    private BillingStrategy billingStrategy;
+
+    @Autowired
+    private PricingService pricingService;
 
     public KeranjangResponse addItem(String email, int itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
