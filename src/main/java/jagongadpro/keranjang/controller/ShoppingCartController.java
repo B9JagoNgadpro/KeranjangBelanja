@@ -2,7 +2,6 @@ package jagongadpro.keranjang.controller;
 
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.service.ShoppingCartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +11,6 @@ public class ShoppingCartController {
 
     private final ShoppingCartService shoppingCartService;
 
-    @Autowired
     public ShoppingCartController(ShoppingCartService shoppingCartService) {
         this.shoppingCartService = shoppingCartService;
     }
@@ -43,5 +41,11 @@ public class ShoppingCartController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @DeleteMapping("/clear/{email}")
+    public ResponseEntity<Void> clearCart(@PathVariable String email) {
+        shoppingCartService.clearCart(email);
+        return ResponseEntity.ok().build();  // Successfully cleared
     }
 }

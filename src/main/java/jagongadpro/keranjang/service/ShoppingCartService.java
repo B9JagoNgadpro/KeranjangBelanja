@@ -69,4 +69,13 @@ public class ShoppingCartService {
         cart.getItems().forEach((id, qty) -> itemMap.put(String.valueOf(id), qty));
         return billingStrategy.calculateTotal(itemMap, pricingService);
     }
+
+    public void clearCart(String email) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null) {
+            cart.getItems().clear();  
+            cart.setTotalPrice(0);  
+            shoppingCartRepository.save(cart);  
+        }
+    }
 }
