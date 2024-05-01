@@ -3,13 +3,30 @@ package jagongadpro.keranjang.model;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
-public class ShoppingCart {
-    private int itemId; // ID dari item sebagai integer
-    private int quantity; // Jumlah dari item tersebut dalam keranjang
+import jakarta.persistence.*;
+import java.util.Map;
+import java.util.HashMap;
 
-    public ShoppingCart(int itemId, int quantity) {
-        this.itemId = itemId;
-        this.quantity = quantity;
+@Getter @Setter
+@Entity
+@Table(name = "shopping_carts")
+public class ShoppingCart {
+    @Id
+    @Column(name = "email", nullable = false)
+    private String email; // Email pengguna sebagai primary key
+
+    @ElementCollection
+    @CollectionTable(name = "cart_items") // Tabel untuk menyimpan item dalam keranjang
+    @MapKeyColumn(name = "item_id") // Kolom untuk item ID
+    @Column(name = "quantity") // Kolom untuk quantity
+    private Map<Integer, Integer> items = new HashMap<>();
+
+    @Column(name = "total_price")
+    private double totalPrice; // Total harga dari semua item dalam cart
+
+    public ShoppingCart(String email) {
+        this.email = email;
+        this.items = new HashMap<>();
+        this.totalPrice = 0.0;
     }
 }
