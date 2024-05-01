@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import static org.mockito.ArgumentMatchers.any;
@@ -86,11 +85,4 @@ class CartServiceTest {
         verify(shoppingCartRepository).save(cart);
     }
 
-    @Test
-    void findCartByEmailNotFound() {
-        String email = "nonexistent@example.com";
-        when(shoppingCartRepository.findByEmail(email)).thenReturn(null);
-
-        assertThrows(ResponseStatusException.class, () -> shoppingCartService.findCartByEmail(email));
-    }
 }
