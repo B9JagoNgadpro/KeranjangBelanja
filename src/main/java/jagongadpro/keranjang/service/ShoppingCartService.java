@@ -3,7 +3,6 @@ package jagongadpro.keranjang.service;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -16,7 +15,6 @@ public class ShoppingCartService {
     private final BillingStrategy billingStrategy;
     private final PricingService pricingService;
 
-    @Autowired
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                BillingStrategy billingStrategy,
                                PricingService pricingService) {
@@ -52,12 +50,8 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null) {
             cart.getItems().remove(itemId);
-            if (cart.getItems().isEmpty()) {
-                cart.setTotalPrice(0);
-            } else {
-                double totalPrice = calculateTotalPrice(cart);
-                cart.setTotalPrice(totalPrice);
-            }
+            double totalPrice = calculateTotalPrice(cart);
+            cart.setTotalPrice(totalPrice);
             shoppingCartRepository.save(cart);
         }
     }
@@ -67,7 +61,7 @@ public class ShoppingCartService {
         if (cart != null) {
             return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
         }
-        return null; 
+        return null;
     }
 
     private double calculateTotalPrice(ShoppingCart cart) {
