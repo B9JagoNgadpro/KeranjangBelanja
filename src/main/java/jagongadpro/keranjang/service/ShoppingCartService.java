@@ -31,10 +31,7 @@ public class ShoppingCartService {
             cart = new ShoppingCart(email);
         }
         cart.getItems().merge(itemId, quantity, Integer::sum);
-
-        // Calculate total price using billing strategy
         double totalPrice = calculateTotalPrice(cart);
-
         cart.setTotalPrice(totalPrice);
         cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
@@ -44,13 +41,33 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null && cart.getItems().containsKey(itemId)) {
             cart.getItems().put(itemId, quantity);
-
             double totalPrice = calculateTotalPrice(cart);
             cart.setTotalPrice(totalPrice);
-
             shoppingCartRepository.save(cart);
         }
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
+    }
+
+    public void deleteItem(String email, int itemId) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null) {
+            cart.getItems().remove(itemId);
+            if (cart.getItems().isEmpty()) {
+                cart.setTotalPrice(0);
+            } else {
+                double totalPrice = calculateTotalPrice(cart);
+                cart.setTotalPrice(totalPrice);
+            }
+            shoppingCartRepository.save(cart);
+        }
+    }
+
+    public KeranjangResponse findCartByEmail(String email) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null) {
+            return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
+        }
+        return null; 
     }
 
     private double calculateTotalPrice(ShoppingCart cart) {

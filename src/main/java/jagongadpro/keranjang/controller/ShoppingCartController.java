@@ -1,33 +1,47 @@
 package jagongadpro.keranjang.controller;
 
+import jagongadpro.keranjang.dto.KeranjangResponse;
+import jagongadpro.keranjang.service.ShoppingCartService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-
-@Controller
+@RestController
 @RequestMapping("/api/cart")
 public class ShoppingCartController {
 
-    @GetMapping("/")
-    public String createHomePage(){
-        return "ShoppingCart";
+    private final ShoppingCartService shoppingCartService;
+
+    @Autowired
+    public ShoppingCartController(ShoppingCartService shoppingCartService) {
+        this.shoppingCartService = shoppingCartService;
     }
 
-    @GetMapping("/add")
-    public ResponseEntity<String> getAddItemForm() {
-        return ResponseEntity.ok("This is a example POST to add an item.");
+    @PostMapping("/add")
+    public ResponseEntity<KeranjangResponse> addItem(@RequestParam String email, @RequestParam int itemId, @RequestParam int quantity) {
+        KeranjangResponse response = shoppingCartService.addItem(email, itemId, quantity);
+        return ResponseEntity.ok(response);
     }
-    
-    @GetMapping("/remove")
-    public ResponseEntity<String> getRemoveItemForm() {
-        return ResponseEntity.ok("This is a example POST to remove an item.");
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam int itemId) {
+        shoppingCartService.deleteItem(email, itemId);
+        return ResponseEntity.ok().build();  // No content to return
     }
-    
-    @GetMapping("/update")
-    public ResponseEntity<String> getUpdateItemForm() {
-        return ResponseEntity.ok("This is a example POST to update an item.");
+
+    @PutMapping("/update")
+    public ResponseEntity<KeranjangResponse> updateItem(@RequestParam String email, @RequestParam int itemId, @RequestParam int quantity) {
+        KeranjangResponse response = shoppingCartService.updateItem(email, itemId, quantity);
+        return ResponseEntity.ok(response);
     }
-    
+
+    @GetMapping("/view/{email}")
+    public ResponseEntity<KeranjangResponse> viewCart(@PathVariable String email) {
+        KeranjangResponse response = shoppingCartService.findCartByEmail(email);  
+        if (response != null) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
