@@ -46,6 +46,6 @@ public class ShoppingCartController {
     @DeleteMapping("/clear/{email}")
     public ResponseEntity<Void> clearCart(@PathVariable String email) {
         shoppingCartService.clearCart(email);
-        return ResponseEntity.ok().build();  // Successfully cleared
+        return ResponseEntity.ok().build();  
     }
 }
