@@ -3,25 +3,30 @@ package jagongadpro.keranjang.service;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class ShoppingCartService {
-
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
-
     private BillingStrategy billingStrategy;
 
-    public ShoppingCartService() {
+
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
+                               @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
+                               @Qualifier("normalPricingStrategy") BillingStrategy normalStrategy) {
+        this.shoppingCartRepository = shoppingCartRepository;
         if (LocalDate.now().getDayOfMonth() == 1) {
-            this.billingStrategy = new DiscountPricingStrategy();
+            this.billingStrategy = discountStrategy;
         } else {
-            this.billingStrategy = new NormalPricingStrategy();
+            this.billingStrategy = normalStrategy;
         }
     }
 

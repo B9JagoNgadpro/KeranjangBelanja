@@ -1,15 +1,13 @@
 package jagongadpro.keranjang.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
+@Qualifier("discountPricingStrategy")
 public class DiscountPricingStrategy implements BillingStrategy {
-    private double discountRate;
-
-    public DiscountPricingStrategy() {
-        this.discountRate = 10.0;  
-    }
+    private double discountRate = 10.0;
 
     @Override
     public double calculateTotal(Map<String, Integer> itemQuantities, Map<String, Double> itemPrices) {

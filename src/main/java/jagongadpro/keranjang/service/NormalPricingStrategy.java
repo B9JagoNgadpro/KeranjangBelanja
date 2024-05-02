@@ -2,9 +2,11 @@ package jagongadpro.keranjang.service;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
+@Qualifier("normalPricingStrategy")
 public class NormalPricingStrategy implements BillingStrategy {
     @Override
     public double calculateTotal(Map<String, Integer> itemQuantities, Map<String, Double> itemPrices) {
