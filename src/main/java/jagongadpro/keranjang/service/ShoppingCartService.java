@@ -3,10 +3,9 @@ package jagongadpro.keranjang.service;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,11 +15,15 @@ public class ShoppingCartService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
 
-    @Autowired
     private BillingStrategy billingStrategy;
 
-    @Autowired
-    private PricingService pricingService;
+    public ShoppingCartService() {
+        if (LocalDate.now().getDayOfMonth() == 1) {
+            this.billingStrategy = new DiscountPricingStrategy();
+        } else {
+            this.billingStrategy = new NormalPricingStrategy();
+        }
+    }
 
     public KeranjangResponse addItem(String email, int itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
@@ -28,8 +31,14 @@ public class ShoppingCartService {
             cart = new ShoppingCart(email);
         }
         cart.getItems().merge(itemId, quantity, Integer::sum);
-        double totalPrice = calculateTotalPrice(cart);
+
+        Map<String, Double> itemPrices = new HashMap<>();
+        Map<String, Integer> itemQuantities = new HashMap<>();
+        cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
+
+        double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
         cart.setTotalPrice(totalPrice);
+
         cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
@@ -38,8 +47,14 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null && cart.getItems().containsKey(itemId)) {
             cart.getItems().put(itemId, quantity);
-            double totalPrice = calculateTotalPrice(cart);
+
+            Map<String, Double> itemPrices = new HashMap<>();
+            Map<String, Integer> itemQuantities = new HashMap<>();
+            cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
+
+            double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
             cart.setTotalPrice(totalPrice);
+
             shoppingCartRepository.save(cart);
         }
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
@@ -49,8 +64,14 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null) {
             cart.getItems().remove(itemId);
-            double totalPrice = calculateTotalPrice(cart);
+
+            Map<String, Double> itemPrices = new HashMap<>();
+            Map<String, Integer> itemQuantities = new HashMap<>();
+            cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
+
+            double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
             cart.setTotalPrice(totalPrice);
+
             shoppingCartRepository.save(cart);
         }
     }
@@ -63,18 +84,12 @@ public class ShoppingCartService {
         return null;
     }
 
-    private double calculateTotalPrice(ShoppingCart cart) {
-        Map<String, Integer> itemMap = new HashMap<>();
-        cart.getItems().forEach((id, qty) -> itemMap.put(String.valueOf(id), qty));
-        return billingStrategy.calculateTotal(itemMap, pricingService);
-    }
-
     public void clearCart(String email) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null) {
-            cart.getItems().clear();  
-            cart.setTotalPrice(0);  
-            shoppingCartRepository.save(cart);  
+            cart.getItems().clear();
+            cart.setTotalPrice(0);
+            shoppingCartRepository.save(cart);
         }
     }
 }
