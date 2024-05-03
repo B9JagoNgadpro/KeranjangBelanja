@@ -11,6 +11,6 @@ import java.util.Map;
 @AllArgsConstructor 
 public class KeranjangResponse {
     private String email;
-    private Map<Integer, Integer> items;
+    private Map<String, Integer> items;
     private double totalPrice;
 }

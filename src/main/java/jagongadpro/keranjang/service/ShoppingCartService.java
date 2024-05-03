@@ -30,7 +30,7 @@ public class ShoppingCartService {
         }
     }
 
-    public KeranjangResponse addItem(String email, int itemId, int quantity) {
+    public KeranjangResponse addItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             cart = new ShoppingCart(email);
@@ -48,7 +48,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    public KeranjangResponse updateItem(String email, int itemId, int quantity) {
+    public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null && cart.getItems().containsKey(itemId)) {
             cart.getItems().put(itemId, quantity);
@@ -65,7 +65,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    public void deleteItem(String email, int itemId) {
+    public void deleteItem(String email, String itemId) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null) {
             cart.getItems().remove(itemId);

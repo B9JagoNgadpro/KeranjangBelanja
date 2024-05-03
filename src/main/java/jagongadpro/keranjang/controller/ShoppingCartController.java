@@ -16,19 +16,19 @@ public class ShoppingCartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<KeranjangResponse> addItem(@RequestParam String email, @RequestParam int itemId, @RequestParam int quantity) {
+    public ResponseEntity<KeranjangResponse> addItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
         KeranjangResponse response = shoppingCartService.addItem(email, itemId, quantity);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam int itemId) {
+    public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam String itemId) {
         shoppingCartService.deleteItem(email, itemId);
         return ResponseEntity.ok().build();  // No content to return
     }
 
     @PutMapping("/update")
-    public ResponseEntity<KeranjangResponse> updateItem(@RequestParam String email, @RequestParam int itemId, @RequestParam int quantity) {
+    public ResponseEntity<KeranjangResponse> updateItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
         KeranjangResponse response = shoppingCartService.updateItem(email, itemId, quantity);
         return ResponseEntity.ok(response);
     }

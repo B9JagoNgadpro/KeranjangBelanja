@@ -19,7 +19,7 @@ public class ShoppingCart {
     @CollectionTable(name = "cart_items") // Tabel untuk menyimpan item dalam keranjang
     @MapKeyColumn(name = "item_id") // Kolom untuk item ID
     @Column(name = "quantity") // Kolom untuk quantity
-    private Map<Integer, Integer> items = new HashMap<>();
+    private Map<String, Integer> items = new HashMap<>();
 
     @Column(name = "total_price")
     private double totalPrice; // Total harga dari semua item dalam cart
