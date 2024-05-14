@@ -16,7 +16,7 @@ public class ShoppingCartController {
         this.shoppingCartService = shoppingCartService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<String> home() {
         return ResponseEntity.ok("Welcome to the Shopping Cart API");
     }
