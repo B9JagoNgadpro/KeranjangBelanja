@@ -2,6 +2,7 @@ package jagongadpro.keranjang.controller;
 
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.service.ShoppingCartService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,11 @@ public class ShoppingCartController {
         this.shoppingCartService = shoppingCartService;
     }
 
+    @GetMapping("/")
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("Welcome to the Shopping Cart API");
+    }
+    
     @PostMapping("/add")
     public ResponseEntity<KeranjangResponse> addItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
         KeranjangResponse response = shoppingCartService.addItem(email, itemId, quantity);
@@ -24,7 +30,7 @@ public class ShoppingCartController {
     @DeleteMapping("/remove")
     public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam String itemId) {
         shoppingCartService.deleteItem(email, itemId);
-        return ResponseEntity.ok().build();  // No content to return
+        return ResponseEntity.ok().build();  
     }
 
     @PutMapping("/update")
