@@ -3,6 +3,7 @@ package jagongadpro.keranjang.controller;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.service.ShoppingCartService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +23,13 @@ public class ShoppingCartController {
     }
     
     @PostMapping("/add")
-    public ResponseEntity<KeranjangResponse> addItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
-        KeranjangResponse response = shoppingCartService.addItem(email, itemId, quantity);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> addItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
+        try {
+            KeranjangResponse response = shoppingCartService.addItem(email, itemId, quantity);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/remove")

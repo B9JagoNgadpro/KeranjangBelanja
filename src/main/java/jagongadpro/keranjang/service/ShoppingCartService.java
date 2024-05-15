@@ -33,20 +33,21 @@ public class ShoppingCartService {
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
-            cart = new ShoppingCart(email);
+            throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
         }
         cart.getItems().merge(itemId, quantity, Integer::sum);
-
+    
         Map<String, Double> itemPrices = new HashMap<>();
         Map<String, Integer> itemQuantities = new HashMap<>();
         cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
-
+    
         double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
         cart.setTotalPrice(totalPrice);
-
+    
         cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
+    
 
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
