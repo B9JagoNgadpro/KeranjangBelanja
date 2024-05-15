@@ -3,7 +3,7 @@ plugins {
 	jacoco
 	id("org.springframework.boot") version "3.2.4"
 	id("io.spring.dependency-management") version "1.1.4"
-	id("org.sonarqube") version "4.4.1.3373"
+	id("org.sonarqube") version "3.5.0.2730"
 }
 
 group = "jagongadpro"
@@ -35,6 +35,24 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+}
+
+tasks.register<Test>("unitTest"){
+	description = "Runs unit tests."
+	group = "verification"
+
+	filter{
+		excludeTestsMatching("*FunctionalTest")
+	}
+}
+
+tasks.register<Test>("functionalTest"){
+	description = "Runs functional tests."
+	group = "verification"
+
+	filter{
+		includeTestsMatching("*FunctionalTest")
+	}
 }
 
 tasks.withType<Test> {
