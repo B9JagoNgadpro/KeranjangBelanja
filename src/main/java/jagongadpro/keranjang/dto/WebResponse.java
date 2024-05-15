@@ -7,10 +7,10 @@ import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
-@NoArgsConstructor // Anotasi untuk menghasilkan constructor tanpa argumen
-@AllArgsConstructor // Anotasi untuk menghasilkan constructor dengan semua argumen
+@NoArgsConstructor 
+@AllArgsConstructor
 public class WebResponse<T> {
-    private T data; // Data yang akan dikirimkan sebagai respons
-    private String message; // Pesan yang dapat digunakan untuk menyampaikan informasi tambahan atau kesalahan
-    private boolean success; // Status untuk menunjukkan apakah operasi berhasil atau tidak
+    private T data; 
+    private String message; 
+    private boolean success; 
 }
