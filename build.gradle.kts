@@ -32,6 +32,8 @@ dependencies {
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 }
 
 tasks.withType<Test> {
@@ -53,4 +55,12 @@ tasks.jacocoTestReport {
         csv.required.set(false)
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
+}
+
+sonar {
+	properties {
+		property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
+		property("sonar.organization", "b9jagongadpro")
+		property("sonar.java.binaries", ".")
+	}
 }
