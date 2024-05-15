@@ -10,14 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class ShoppingCartService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
     private BillingStrategy billingStrategy;
-
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
@@ -35,30 +33,23 @@ public class ShoppingCartService {
         if (cart == null) {
             throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
         }
-        cart.getItems().merge(itemId, quantity, Integer::sum);
-    
-        Map<String, Double> itemPrices = new HashMap<>();
-        Map<String, Integer> itemQuantities = new HashMap<>();
-        cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
-    
-        double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
+
+        cart.getItems().put(itemId, cart.getItems().getOrDefault(itemId, 0) + quantity);
+
+        //itemPrices diambil dari sumber lain
+        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), new HashMap<>()); 
         cart.setTotalPrice(totalPrice);
-    
-        cart = shoppingCartRepository.save(cart);
+
+        shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
-    
 
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart != null && cart.getItems().containsKey(itemId)) {
             cart.getItems().put(itemId, quantity);
 
-            Map<String, Double> itemPrices = new HashMap<>();
-            Map<String, Integer> itemQuantities = new HashMap<>();
-            cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
-
-            double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
+            double totalPrice = billingStrategy.calculateTotal(cart.getItems(), new HashMap<>()); 
             cart.setTotalPrice(totalPrice);
 
             shoppingCartRepository.save(cart);
@@ -71,11 +62,7 @@ public class ShoppingCartService {
         if (cart != null) {
             cart.getItems().remove(itemId);
 
-            Map<String, Double> itemPrices = new HashMap<>();
-            Map<String, Integer> itemQuantities = new HashMap<>();
-            cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
-
-            double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
+            double totalPrice = billingStrategy.calculateTotal(cart.getItems(), new HashMap<>()); 
             cart.setTotalPrice(totalPrice);
 
             shoppingCartRepository.save(cart);
