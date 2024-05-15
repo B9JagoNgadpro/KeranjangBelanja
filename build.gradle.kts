@@ -47,15 +47,12 @@ tasks.test {
 }
 
 tasks.jacocoTestReport {
-    classDirectories.setFrom(files(classDirectories.files.map {
-        fileTree(it) { exclude("**/*Application**") }
-    }))
-    dependsOn(tasks.test) // tests are required to run before generating the report
-    reports {
-        xml.required.set(true) 
-        csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
-    }
+	dependsOn(tasks.test)
+
+	reports {
+		xml.required = true
+		html.required = true
+	}
 }
 
 sonar {
@@ -64,6 +61,5 @@ sonar {
         property("sonar.organization", "b9jagongadpro")
         property("sonar.java.binaries", ".")
         property("sonar.gradle.skipCompile", "true")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
