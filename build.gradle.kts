@@ -59,9 +59,10 @@ tasks.jacocoTestReport {
 }
 
 sonar {
-	properties {
-		property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
-		property("sonar.organization", "b9jagongadpro")
-		property("sonar.java.binaries", ".")
-	}
+    properties {
+        property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
+        property("sonar.organization", "b9jagongadpro")
+        property("sonar.java.binaries", ".")
+        property("sonar.gradle.skipCompile", "true")
+    }
 }
