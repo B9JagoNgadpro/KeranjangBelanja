@@ -1,0 +1,22 @@
+package jagongadpro.keranjang.dto;
+
+import lombok.*;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class GameDto {
+    private String id;
+
+    private String nama;
+
+    private String deskripsi;
+
+    private Integer harga;
+
+    private String kategori;
+
+    private Integer stok;
+}

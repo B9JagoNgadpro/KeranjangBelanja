@@ -1,46 +1,88 @@
 package jagongadpro.keranjang.service;
 
 import jagongadpro.keranjang.model.ShoppingCart;
+import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.HashMap;
 
 @Service
 public class ShoppingCartService {
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+    private BillingStrategy billingStrategy;
 
-    private final ShoppingCartRepository shoppingCartRepository;
-
-    public ShoppingCartService() {
-        this.shoppingCartRepository = ShoppingCartRepository.getInstance();
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
+                               @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
+                               @Qualifier("normalPricingStrategy") BillingStrategy normalStrategy) {
+        this.shoppingCartRepository = shoppingCartRepository;
+        if (LocalDate.now().getDayOfMonth() == 1) {
+            this.billingStrategy = discountStrategy;
+        } else {
+            this.billingStrategy = normalStrategy;
+        }
     }
 
-    // Konstruktor tambahan untuk testing
-    public ShoppingCartService(ShoppingCartRepository repository) {
-        this.shoppingCartRepository = repository;
+    public KeranjangResponse addItem(String email, String itemId, int quantity) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart == null) {
+            throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
+        }
+
+        cart.getItems().put(itemId, cart.getItems().getOrDefault(itemId, 0) + quantity);
+
+        //itemPrices diambil dari sumber lain
+        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), new HashMap<>()); 
+        cart.setTotalPrice(totalPrice);
+
+        shoppingCartRepository.save(cart);
+        return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
+    public KeranjangResponse updateItem(String email, String itemId, int quantity) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null && cart.getItems().containsKey(itemId)) {
+            cart.getItems().put(itemId, quantity);
 
-    public ShoppingCart addItem(int itemId, int quantity) {
-        return shoppingCartRepository.addItem(itemId, quantity);
+            double totalPrice = billingStrategy.calculateTotal(cart.getItems(), new HashMap<>()); 
+            cart.setTotalPrice(totalPrice);
+
+            shoppingCartRepository.save(cart);
+        }
+        return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    public List<ShoppingCart> findAllItems() {
-        Map<Integer, ShoppingCart> items = shoppingCartRepository.getAllItems();
-        return new ArrayList<>(items.values());
+    public void deleteItem(String email, String itemId) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null) {
+            cart.getItems().remove(itemId);
+
+            double totalPrice = billingStrategy.calculateTotal(cart.getItems(), new HashMap<>()); 
+            cart.setTotalPrice(totalPrice);
+
+            shoppingCartRepository.save(cart);
+        }
     }
 
-    public ShoppingCart updateItem(int itemId, int quantity) {
-        return shoppingCartRepository.updateItem(itemId, quantity);
+    public KeranjangResponse findCartByEmail(String email) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null) {
+            return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
+        }
+        return null;
     }
 
-    public void deleteItem(int itemId) {
-        shoppingCartRepository.removeItem(itemId);
-    }
-
-    public ShoppingCart findItemById(int itemId) {
-        return shoppingCartRepository.getItem(itemId);
+    public void clearCart(String email) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart != null) {
+            cart.getItems().clear();
+            cart.setTotalPrice(0);
+            shoppingCartRepository.save(cart);
+        }
     }
 }
