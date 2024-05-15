@@ -13,16 +13,20 @@ import java.util.HashMap;
 public class ShoppingCart {
     @Id
     @Column(name = "email", nullable = false)
-    private String email; // Email pengguna sebagai primary key
+    private String email;
 
     @ElementCollection
-    @CollectionTable(name = "cart_items") // Tabel untuk menyimpan item dalam keranjang
-    @MapKeyColumn(name = "item_id") // Kolom untuk item ID
-    @Column(name = "quantity") // Kolom untuk quantity
+    @CollectionTable(name = "cart_items")
+    @MapKeyColumn(name = "item_id")
+    @Column(name = "quantity")
     private Map<String, Integer> items = new HashMap<>();
 
     @Column(name = "total_price")
-    private double totalPrice; // Total harga dari semua item dalam cart
+    private double totalPrice;
+
+    public ShoppingCart() {
+        // Konstruktor default
+    }
 
     public ShoppingCart(String email) {
         this.email = email;
