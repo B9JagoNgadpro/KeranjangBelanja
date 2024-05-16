@@ -1,17 +1,17 @@
 plugins {
-    java
-    id("org.springframework.boot") version "3.2.4"
-    id("io.spring.dependency-management") version "1.1.4"
-    jacoco
-    id("org.sonarqube") version "4.4.1.3373"
+	java
+	jacoco
+	id("org.springframework.boot") version "3.2.4"
+	id("io.spring.dependency-management") version "1.1.4"
+	id("org.sonarqube") version "4.4.1.3373"
 }
 
 sonar {
-	properties {
+    properties {
         property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
         property("sonar.organization", "b9jagongadpro")
-		property("sonar.host.url", "https://sonarcloud.io")
-	}
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 group = "jagongadpro"
