@@ -6,6 +6,14 @@ plugins {
 	id("org.sonarqube") version "4.4.1.3373"
 }
 
+sonar {
+	properties {
+        property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
+        property("sonar.organization", "b9jagongadpro")
+		property("sonar.host.url", "https://sonarcloud.io")
+	}
+}
+
 group = "jagongadpro"
 version = "0.0.1-SNAPSHOT"
 
@@ -35,10 +43,31 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+	implementation("org.postgresql:postgresql")
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
+}
+
+tasks.test {
+	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+	classDirectories.setFrom(files(classDirectories.files.map {
+		fileTree(it) { exclude("**/*Application**") }
+	}))
+	dependsOn(tasks.test) // tests are required to run before generating the report
+	reports {
+		xml.required.set(false)
+		csv.required.set(false)
+		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+	}
 }
 
 tasks.register<Test>("unitTest"){
-	description = "Runs unit tests."
+	description = "Runs unit test."
 	group = "verification"
 
 	filter{
@@ -47,37 +76,31 @@ tasks.register<Test>("unitTest"){
 }
 
 tasks.register<Test>("functionalTest"){
-	description = "Runs functional tests."
+	description = "Runs functional test."
 	group = "verification"
 
 	filter{
-		includeTestsMatching("*FunctionalTest")
+		excludeTestsMatching("*FunctionalTest")
 	}
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>().configureEach {
 	useJUnitPlatform()
 }
 
 tasks.test {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport) 
+	filter {
+		excludeTestsMatching("*FunctionalTest")
+	}
+
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
 
 	reports {
-		xml.required = true
 		html.required = true
+		xml.required = true
 	}
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
-        property("sonar.organization", "b9jagongadpro")
-        property("sonar.java.binaries", ".")
-        property("sonar.gradle.skipCompile", "true")
-    }
 }
