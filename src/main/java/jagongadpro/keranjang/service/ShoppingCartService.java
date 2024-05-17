@@ -3,13 +3,20 @@ package jagongadpro.keranjang.service;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
+import jagongadpro.keranjang.dto.GameTransaksiResponse;
+import jagongadpro.keranjang.dto.WebResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,14 +27,16 @@ public class ShoppingCartService {
 
     private final BillingStrategy discountStrategy;
     private final BillingStrategy normalStrategy;
-
+    private final RestTemplate restTemplate;
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
-                               @Qualifier("normalPricingStrategy") BillingStrategy normalStrategy) {
+                               @Qualifier("normalPricingStrategy") BillingStrategy normalStrategy,
+                               RestTemplate restTemplate) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.discountStrategy = discountStrategy;
         this.normalStrategy = normalStrategy;
+        this.restTemplate = restTemplate;
         setBillingStrategy();
     }
 
@@ -47,7 +56,7 @@ public class ShoppingCartService {
 
         cart.getItems().put(itemId, cart.getItems().getOrDefault(itemId, 0) + quantity);
 
-        Map<String, Double> itemPrices = getItemPrices(); 
+        Map<String, Double> itemPrices = getItemPrices();
         double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
         cart.setTotalPrice(totalPrice);
 
@@ -63,7 +72,7 @@ public class ShoppingCartService {
 
         cart.getItems().put(itemId, quantity);
 
-        Map<String, Double> itemPrices = getItemPrices(); 
+        Map<String, Double> itemPrices = getItemPrices();
         double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
         cart.setTotalPrice(totalPrice);
 
@@ -79,7 +88,7 @@ public class ShoppingCartService {
 
         cart.getItems().remove(itemId);
 
-        Map<String, Double> itemPrices = getItemPrices(); 
+        Map<String, Double> itemPrices = getItemPrices();
         double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
         cart.setTotalPrice(totalPrice);
 
@@ -106,7 +115,19 @@ public class ShoppingCartService {
     }
 
     private Map<String, Double> getItemPrices() {
-        // Implementasi untuk mendapatkan harga item
-        return new HashMap<>();
+        String url = "http://35.240.130.147/api/games/get-all";
+        ResponseEntity<WebResponse<List<GameTransaksiResponse>>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<WebResponse<List<GameTransaksiResponse>>>() {
+                });
+
+        List<GameTransaksiResponse> games = response.getBody().getData();
+        Map<String, Double> itemPrices = new HashMap<>();
+        for (GameTransaksiResponse game : games) {
+            itemPrices.put(game.getNama(), game.getHargaSatuan().doubleValue());
+        }
+        return itemPrices;
     }
 }
