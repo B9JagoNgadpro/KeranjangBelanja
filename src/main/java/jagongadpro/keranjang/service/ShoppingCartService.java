@@ -23,11 +23,17 @@ import java.util.Map;
 public class ShoppingCartService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
+
     private BillingStrategy billingStrategy;
 
-    private final BillingStrategy discountStrategy;
-    private final BillingStrategy normalStrategy;
-    private final RestTemplate restTemplate;
+    @Autowired
+    private BillingStrategy discountStrategy;
+
+    @Autowired
+    private BillingStrategy normalStrategy;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
@@ -40,7 +46,7 @@ public class ShoppingCartService {
         setBillingStrategy();
     }
 
-    private void setBillingStrategy() {
+    public void setBillingStrategy() {
         if (LocalDate.now().getDayOfMonth() == 1) {
             this.billingStrategy = discountStrategy;
         } else {
@@ -100,6 +106,7 @@ public class ShoppingCartService {
         if (cart == null) {
             throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
         }
+
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
@@ -110,18 +117,18 @@ public class ShoppingCartService {
         }
 
         cart.getItems().clear();
-        cart.setTotalPrice(0);
+        cart.setTotalPrice(0.0);
+
         shoppingCartRepository.save(cart);
     }
 
     private Map<String, Double> getItemPrices() {
-        String url = "http://35.240.130.147/api/games/get-all";
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
-                url,
+                "http://35.240.130.147/api/games/get-all",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {
-                });
+                new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {}
+        );
 
         List<GameResponse> games = response.getBody().getData();
         Map<String, Double> itemPrices = new HashMap<>();
