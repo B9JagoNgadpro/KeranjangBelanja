@@ -8,11 +8,9 @@ import java.util.Map;
 
 @Getter
 @Setter
-@AllArgsConstructor 
+@AllArgsConstructor
 public class KeranjangResponse {
     private String email;
-
     private Map<String, Integer> items;
-    
     private double totalPrice;
 }

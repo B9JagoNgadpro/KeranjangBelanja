@@ -2,6 +2,7 @@ package jagongadpro.keranjang.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
 
 @Service
@@ -19,4 +20,3 @@ public class DiscountPricingStrategy implements BillingStrategy {
         return total;
     }
 }
-
