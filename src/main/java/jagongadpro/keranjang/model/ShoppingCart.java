@@ -24,10 +24,6 @@ public class ShoppingCart {
     @Column(name = "total_price")
     private double totalPrice;
 
-    public ShoppingCart() {
-        // Konstruktor default
-    }
-
     public ShoppingCart(String email) {
         this.email = email;
         this.items = new HashMap<>();

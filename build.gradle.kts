@@ -8,9 +8,9 @@ plugins {
 
 sonar {
     properties {
-        property("sonar.projectKey", "B9JagoNgadpro_KeranjangBelanja")
-        property("sonar.organization", "b9jagongadpro")
-        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.projectKey","B9JagoNgadpro_KeranjangBelanja")
+        property("sonar.organization","b9jagongadpro")
+        property("sonar.host.url","https://sonarcloud.io")
     }
 }
 
