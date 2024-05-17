@@ -3,7 +3,7 @@ package jagongadpro.keranjang.service;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
-import jagongadpro.keranjang.dto.GameTransaksiResponse;
+import jagongadpro.keranjang.dto.GameResponse;
 import jagongadpro.keranjang.dto.WebResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,17 +116,17 @@ public class ShoppingCartService {
 
     private Map<String, Double> getItemPrices() {
         String url = "http://35.240.130.147/api/games/get-all";
-        ResponseEntity<WebResponse<List<GameTransaksiResponse>>> response = restTemplate.exchange(
+        ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<WebResponse<List<GameTransaksiResponse>>>() {
+                new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {
                 });
 
-        List<GameTransaksiResponse> games = response.getBody().getData();
+        List<GameResponse> games = response.getBody().getData();
         Map<String, Double> itemPrices = new HashMap<>();
-        for (GameTransaksiResponse game : games) {
-            itemPrices.put(game.getNama(), game.getHargaSatuan().doubleValue());
+        for (GameResponse game : games) {
+            itemPrices.put(game.getNama(), game.getHarga().doubleValue());
         }
         return itemPrices;
     }
