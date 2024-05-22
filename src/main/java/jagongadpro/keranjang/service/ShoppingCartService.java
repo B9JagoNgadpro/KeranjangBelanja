@@ -52,6 +52,7 @@ public class ShoppingCartService {
     public void setBillingStrategy() {
         if (LocalDate.now().getDayOfMonth() == 1) {
             this.billingStrategy = discountStrategy;
+            applyDiscountsToAllCarts();
         } else {
             this.billingStrategy = normalStrategy;
         }
