@@ -8,6 +8,8 @@ import jagongadpro.keranjang.dto.WebResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ShoppingCartService {
@@ -52,6 +55,19 @@ public class ShoppingCartService {
         } else {
             this.billingStrategy = normalStrategy;
         }
+    }
+
+    @Scheduled(cron = "0 0 0 1 * ?")
+    @Async
+    public CompletableFuture<Void> applyDiscountsToAllCarts() {
+        List<ShoppingCart> carts = shoppingCartRepository.findAll();
+        for (ShoppingCart cart : carts) {
+            Map<String, Double> itemPrices = getItemPrices();
+            double totalPrice = discountStrategy.calculateTotal(cart.getItems(), itemPrices);
+            cart.setTotalPrice(totalPrice);
+            shoppingCartRepository.save(cart);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
