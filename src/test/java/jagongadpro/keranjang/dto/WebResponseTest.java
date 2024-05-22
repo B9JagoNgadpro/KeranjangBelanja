@@ -33,4 +33,23 @@ public class WebResponseTest {
         assertEquals("data", webResponse.getData());
         assertEquals("error", webResponse.getErrors());
     }
+
+    @Test
+    public void testWebResponseBuilderEmpty() {
+        WebResponse<String> webResponse = WebResponse.<String>builder().build();
+
+        assertNull(webResponse.getData());
+        assertNull(webResponse.getErrors());
+    }
+
+    @Test
+    public void testWebResponseToString() {
+        WebResponse<String> webResponse = WebResponse.<String>builder()
+                .data("data")
+                .errors("error")
+                .build();
+
+        String expectedString = "WebResponse(data=data, errors=error)";
+        assertEquals(expectedString, webResponse.toString());
+    }
 }
