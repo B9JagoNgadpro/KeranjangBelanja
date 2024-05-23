@@ -93,7 +93,7 @@ public class ShoppingCartServiceTest {
 
         assertEquals(currentTestEmail, response.getEmail());
         assertEquals(1, response.getItems().size());
-        assertEquals(0.0, response.getTotalPrice());
+        assertEquals(20.0, response.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
@@ -306,8 +306,8 @@ public class ShoppingCartServiceTest {
 
         shoppingCartService.applyDiscountsToAllCarts();
 
-        assertEquals(0.0, cart1.getTotalPrice());
-        assertEquals(0.0, cart2.getTotalPrice());
+        assertEquals(20.0, cart1.getTotalPrice());
+        assertEquals(60.0, cart2.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(cart1);
         verify(shoppingCartRepository, times(1)).save(cart2);
