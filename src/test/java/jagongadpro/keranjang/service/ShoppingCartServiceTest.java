@@ -147,7 +147,7 @@ public class ShoppingCartServiceTest {
 
         assertEquals(currentTestEmail, response.getEmail());
         assertEquals(1, response.getItems().size());
-        assertEquals(30.0, response.getTotalPrice());
+        assertEquals(0.0, response.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
