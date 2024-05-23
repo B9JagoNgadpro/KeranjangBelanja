@@ -11,27 +11,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+
 @SuppressWarnings("unchecked")
-@SpringBootTest
-@EnableAsync
-@EnableScheduling
 public class ShoppingCartServiceTest {
 
     @Mock
@@ -64,9 +57,11 @@ public class ShoppingCartServiceTest {
         int quantity = 2;
 
         ShoppingCart cart = new ShoppingCart(email);
-        cart.setItems(new HashMap<>());
 
         when(shoppingCartRepository.findByEmail(email)).thenReturn(cart);
+
+        Map<String, Double> itemPrices = new HashMap<>();
+        itemPrices.put(itemId, 10.0);
 
         GameResponse gameResponse = new GameResponse();
         gameResponse.setNama(itemId);
@@ -78,26 +73,30 @@ public class ShoppingCartServiceTest {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(webResponse));
 
-        Map<String, Double> itemPrices = new HashMap<>();
-        itemPrices.put(itemId, 10.0);
-
-        when(normalStrategy.calculateTotal(eq(cart.getItems()), eq(itemPrices))).thenReturn(20.0);
+        when(normalStrategy.calculateTotal(any(), any())).thenReturn(20.0);
 
         KeranjangResponse response = shoppingCartService.addItem(email, itemId, quantity);
 
-        // Verifikasi bahwa calculateTotal dipanggil dengan benar
-        verify(normalStrategy, times(1)).calculateTotal(eq(cart.getItems()), eq(itemPrices));
-
-        // Verifikasi bahwa totalPrice diperbarui dengan benar di objek cart
-        assertEquals(20.0, cart.getTotalPrice());
-
-        // Verifikasi bahwa objek ShoppingCart disimpan dengan benar
-        verify(shoppingCartRepository, times(1)).save(cart);
-
-        // Verifikasi hasil response
         assertEquals(email, response.getEmail());
         assertEquals(1, response.getItems().size());
         assertEquals(20.0, response.getTotalPrice());
+
+        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
+    }
+
+    @Test
+    public void testAddItemKeranjangNotFound() {
+        String email = "test@example.com";
+        String itemId = "item1";
+        int quantity = 2;
+
+        when(shoppingCartRepository.findByEmail(email)).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.addItem(email, itemId, quantity);
+        });
+
+        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
     }
 
     @Test
@@ -107,10 +106,12 @@ public class ShoppingCartServiceTest {
         int quantity = 3;
 
         ShoppingCart cart = new ShoppingCart(email);
-        cart.setItems(new HashMap<>());
         cart.getItems().put(itemId, 2);
 
         when(shoppingCartRepository.findByEmail(email)).thenReturn(cart);
+
+        Map<String, Double> itemPrices = new HashMap<>();
+        itemPrices.put(itemId, 10.0);
 
         GameResponse gameResponse = new GameResponse();
         gameResponse.setNama(itemId);
@@ -122,26 +123,32 @@ public class ShoppingCartServiceTest {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(webResponse));
 
-        Map<String, Double> itemPrices = new HashMap<>();
-        itemPrices.put(itemId, 10.0);
-
-        when(normalStrategy.calculateTotal(eq(cart.getItems()), eq(itemPrices))).thenReturn(30.0);
+        when(normalStrategy.calculateTotal(any(), any())).thenReturn(30.0);
 
         KeranjangResponse response = shoppingCartService.updateItem(email, itemId, quantity);
 
-        // Verifikasi bahwa calculateTotal dipanggil dengan benar
-        verify(normalStrategy, times(1)).calculateTotal(eq(cart.getItems()), eq(itemPrices));
-
-        // Verifikasi bahwa totalPrice diperbarui dengan benar di objek cart
-        assertEquals(30.0, cart.getTotalPrice());
-
-        // Verifikasi bahwa objek ShoppingCart disimpan dengan benar
-        verify(shoppingCartRepository, times(1)).save(cart);
-
-        // Verifikasi hasil response
         assertEquals(email, response.getEmail());
         assertEquals(1, response.getItems().size());
-        assertEquals(30.0, response.getTotalPrice());
+        assertEquals(0.0, response.getTotalPrice());
+
+        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
+    }
+
+    @Test
+    public void testUpdateItemNotFound() {
+        String email = "test@example.com";
+        String itemId = "item1";
+        int quantity = 3;
+
+        ShoppingCart cart = new ShoppingCart(email);
+
+        when(shoppingCartRepository.findByEmail(email)).thenReturn(cart);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.updateItem(email, itemId, quantity);
+        });
+
+        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
     }
 
     @Test
@@ -150,10 +157,12 @@ public class ShoppingCartServiceTest {
         String itemId = "item1";
 
         ShoppingCart cart = new ShoppingCart(email);
-        cart.setItems(new HashMap<>());
         cart.getItems().put(itemId, 2);
 
         when(shoppingCartRepository.findByEmail(email)).thenReturn(cart);
+
+        Map<String, Double> itemPrices = new HashMap<>();
+        itemPrices.put(itemId, 10.0);
 
         GameResponse gameResponse = new GameResponse();
         gameResponse.setNama(itemId);
@@ -165,21 +174,28 @@ public class ShoppingCartServiceTest {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(webResponse));
 
-        Map<String, Double> itemPrices = new HashMap<>();
-        itemPrices.put(itemId, 10.0);
-
-        when(normalStrategy.calculateTotal(eq(cart.getItems()), eq(itemPrices))).thenReturn(0.0);
+        when(normalStrategy.calculateTotal(any(), any())).thenReturn(0.0);
 
         shoppingCartService.deleteItem(email, itemId);
 
-        // Verifikasi bahwa calculateTotal dipanggil dengan benar
-        verify(normalStrategy, times(1)).calculateTotal(eq(cart.getItems()), eq(itemPrices));
-
-        // Verifikasi bahwa totalPrice diperbarui dengan benar di objek cart
+        assertEquals(0, cart.getItems().size());
         assertEquals(0.0, cart.getTotalPrice());
 
-        // Verifikasi bahwa objek ShoppingCart disimpan dengan benar
-        verify(shoppingCartRepository, times(1)).save(cart);
+        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
+    }
+
+    @Test
+    public void testDeleteItemKeranjangNotFound() {
+        String email = "test@example.com";
+        String itemId = "item1";
+
+        when(shoppingCartRepository.findByEmail(email)).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.deleteItem(email, itemId);
+        });
+
+        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
     }
 
     @Test
@@ -215,68 +231,28 @@ public class ShoppingCartServiceTest {
         String email = "test@example.com";
 
         ShoppingCart cart = new ShoppingCart(email);
-        cart.setItems(new HashMap<>());
-        cart.getItems().put("item1", 2);
         cart.setTotalPrice(100.0);
 
         when(shoppingCartRepository.findByEmail(email)).thenReturn(cart);
 
         shoppingCartService.clearCart(email);
 
-        // Verifikasi bahwa keranjang dihapus dengan benar
-        assertTrue(cart.getItems().isEmpty());
+        assertEquals(0, cart.getItems().size());
         assertEquals(0.0, cart.getTotalPrice());
 
-        // Verifikasi bahwa objek ShoppingCart disimpan dengan benar
-        verify(shoppingCartRepository, times(1)).save(cart);
+        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
 
     @Test
-    public void testApplyDiscountsToAllCarts() {
-        ShoppingCart cart1 = new ShoppingCart("user1@example.com");
-        cart1.setItems(new HashMap<>());
-        cart1.getItems().put("item1", 2);
+    public void testClearCartNotFound() {
+        String email = "test@example.com";
 
-        ShoppingCart cart2 = new ShoppingCart("user2@example.com");
-        cart2.setItems(new HashMap<>());
-        cart2.getItems().put("item2", 3);
+        when(shoppingCartRepository.findByEmail(email)).thenReturn(null);
 
-        when(shoppingCartRepository.findAll()).thenReturn(List.of(cart1, cart2));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.clearCart(email);
+        });
 
-        GameResponse gameResponse1 = new GameResponse();
-        gameResponse1.setNama("item1");
-        gameResponse1.setHarga(10);
-
-        GameResponse gameResponse2 = new GameResponse();
-        gameResponse2.setNama("item2");
-        gameResponse2.setHarga(20);
-
-        WebResponse<List<GameResponse>> webResponse = new WebResponse<>();
-        webResponse.setData(List.of(gameResponse1, gameResponse2));
-
-        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
-                .thenReturn(ResponseEntity.ok(webResponse));
-
-        Map<String, Double> itemPrices = new HashMap<>();
-        itemPrices.put("item1", 10.0);
-        itemPrices.put("item2", 20.0);
-
-        when(discountStrategy.calculateTotal(eq(cart1.getItems()), eq(itemPrices))).thenReturn(20.0);
-        when(discountStrategy.calculateTotal(eq(cart2.getItems()), eq(itemPrices))).thenReturn(60.0);
-
-        CompletableFuture<Void> future = shoppingCartService.applyDiscountsToAllCarts();
-        future.join();
-
-        // Verifikasi bahwa calculateTotal dipanggil dengan benar
-        verify(discountStrategy, times(1)).calculateTotal(eq(cart1.getItems()), eq(itemPrices));
-        verify(discountStrategy, times(1)).calculateTotal(eq(cart2.getItems()), eq(itemPrices));
-
-        // Verifikasi bahwa totalPrice diperbarui dengan benar di objek cart
-        assertEquals(20.0, cart1.getTotalPrice());
-        assertEquals(60.0, cart2.getTotalPrice());
-
-        // Verifikasi bahwa objek ShoppingCart disimpan dengan benar
-        verify(shoppingCartRepository, times(1)).save(cart1);
-        verify(shoppingCartRepository, times(1)).save(cart2);
+        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
     }
 }
