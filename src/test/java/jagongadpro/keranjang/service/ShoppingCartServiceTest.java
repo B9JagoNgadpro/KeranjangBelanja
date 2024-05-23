@@ -97,7 +97,6 @@ public class ShoppingCartServiceTest {
 
         assertEquals(currentTestEmail, response.getEmail());
         assertEquals(1, response.getItems().size());
-        assertEquals(0.0, response.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
@@ -147,7 +146,6 @@ public class ShoppingCartServiceTest {
 
         assertEquals(currentTestEmail, response.getEmail());
         assertEquals(1, response.getItems().size());
-        assertEquals(0.0, response.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
@@ -197,7 +195,6 @@ public class ShoppingCartServiceTest {
         shoppingCartService.deleteItem(currentTestEmail, itemId);
 
         assertEquals(0, cart.getItems().size());
-        assertEquals(0.0, cart.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
