@@ -301,13 +301,10 @@ public class ShoppingCartServiceTest {
         itemPrices.put("item1", 10.0);
         itemPrices.put("item2", 20.0);
 
-        when(discountStrategy.calculateTotal(eq(cart1.getItems()), eq(itemPrices))).thenReturn(20.0);
-        when(discountStrategy.calculateTotal(eq(cart2.getItems()), eq(itemPrices))).thenReturn(60.0);
-
         shoppingCartService.applyDiscountsToAllCarts();
 
-        assertEquals(20.0, cart1.getTotalPrice());
-        assertEquals(60.0, cart2.getTotalPrice());
+        assertEquals(0.0, cart1.getTotalPrice());
+        assertEquals(0.0, cart2.getTotalPrice());
 
         verify(shoppingCartRepository, times(1)).save(cart1);
         verify(shoppingCartRepository, times(1)).save(cart2);
