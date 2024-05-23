@@ -1,22 +1,15 @@
 package jagongadpro.keranjang.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class GameDto {
+public class GameResponse {
     private String id;
-
     private String nama;
-
     private String deskripsi;
-
     private Integer harga;
-
     private String kategori;
-
     private Integer stok;
 }

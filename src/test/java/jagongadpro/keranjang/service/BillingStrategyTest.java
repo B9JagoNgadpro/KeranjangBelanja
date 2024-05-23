@@ -1,55 +1,89 @@
-// package jagongadpro.keranjang.service;
+package jagongadpro.keranjang.service;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.AfterEach;
-// import org.junit.jupiter.api.Test;
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
-// import java.util.HashMap;
-// import java.util.Map;
-// import static org.mockito.Mockito.when;
-// import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-// public class BillingStrategyTest {
+import java.util.HashMap;
+import java.util.Map;
 
-//     @Mock
-//     private PricingService mockPricingService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-//     private BillingStrategy discountStrategy;
-//     private BillingStrategy normalStrategy;
-//     private AutoCloseable closeable;
+public class BillingStrategyTest {
 
-//     @BeforeEach
-//     public void setUp() {
-//         closeable = MockitoAnnotations.openMocks(this); 
-//         discountStrategy = new DiscountPricingStrategy(20); // 20% discount
-//         normalStrategy = new NormalPricingStrategy();
-//     }
+    @Test
+    public void testCalculateTotal() {
+        // Membuat mock dari BillingStrategy
+        BillingStrategy billingStrategy = Mockito.mock(BillingStrategy.class);
 
-//     @AfterEach
-//     public void tearDown() throws Exception {
-//         closeable.close(); 
-//     }
+        // Data untuk pengujian
+        Map<String, Integer> itemQuantities = new HashMap<>();
+        itemQuantities.put("item1", 2);
+        itemQuantities.put("item2", 3);
 
-//     @Test
-//     public void testDiscountPricingStrategy() {
-//         Map<String, Integer> items = new HashMap<>();
-//         items.put("item1", 3); // 3 units of item1
-//         when(mockPricingService.getPrice("item1")).thenReturn(100.0); 
+        Map<String, Double> itemPrices = new HashMap<>();
+        itemPrices.put("item1", 10.0);
+        itemPrices.put("item2", 20.0);
 
-//         double total = discountStrategy.calculateTotal(items, mockPricingService);
+        // Menentukan perilaku mock
+        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(80.0);
 
-//         assertEquals(240.0, total, 0.01); // Expected: 3 * 100 * (1 - 0.20)
-//     }
+        // Menghitung total menggunakan mock
+        double total = billingStrategy.calculateTotal(itemQuantities, itemPrices);
 
-//     @Test
-//     public void testNormalPricingStrategy() {
-//         Map<String, Integer> items = new HashMap<>();
-//         items.put("item1", 2); // 2 units of item1
-//         when(mockPricingService.getPrice("item1")).thenReturn(50.0); 
+        // Memastikan hasil yang diharapkan
+        assertEquals(80.0, total);
 
-//         double total = normalStrategy.calculateTotal(items, mockPricingService);
+        // Verifikasi bahwa metode calculateTotal dipanggil dengan parameter yang tepat
+        verify(billingStrategy, times(1)).calculateTotal(itemQuantities, itemPrices);
+    }
 
-//         assertEquals(100.0, total, 0.01); // Expect: 2 * 50
-//     }
-// }
+    @Test
+    public void testCalculateTotalWithMissingPrice() {
+        // Membuat mock dari BillingStrategy
+        BillingStrategy billingStrategy = Mockito.mock(BillingStrategy.class);
+
+        // Data untuk pengujian
+        Map<String, Integer> itemQuantities = new HashMap<>();
+        itemQuantities.put("item1", 2);
+        itemQuantities.put("item2", 3);
+
+        Map<String, Double> itemPrices = new HashMap<>();
+        itemPrices.put("item1", 10.0);
+        // item2 tidak ada harga
+
+        // Menentukan perilaku mock
+        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(20.0);
+
+        // Menghitung total menggunakan mock
+        double total = billingStrategy.calculateTotal(itemQuantities, itemPrices);
+
+        // Memastikan hasil yang diharapkan
+        assertEquals(20.0, total);
+
+        // Verifikasi bahwa metode calculateTotal dipanggil dengan parameter yang tepat
+        verify(billingStrategy, times(1)).calculateTotal(itemQuantities, itemPrices);
+    }
+
+    @Test
+    public void testCalculateTotalWithEmptyMaps() {
+        // Membuat mock dari BillingStrategy
+        BillingStrategy billingStrategy = Mockito.mock(BillingStrategy.class);
+
+        // Data untuk pengujian
+        Map<String, Integer> itemQuantities = new HashMap<>();
+        Map<String, Double> itemPrices = new HashMap<>();
+
+        // Menentukan perilaku mock
+        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(0.0);
+
+        // Menghitung total menggunakan mock
+        double total = billingStrategy.calculateTotal(itemQuantities, itemPrices);
+
+        // Memastikan hasil yang diharapkan
+        assertEquals(0.0, total);
+
+        // Verifikasi bahwa metode calculateTotal dipanggil dengan parameter yang tepat
+        verify(billingStrategy, times(1)).calculateTotal(itemQuantities, itemPrices);
+    }
+}

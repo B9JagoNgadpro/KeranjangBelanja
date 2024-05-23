@@ -1,92 +1,120 @@
-// package jagongadpro.keranjang.controller;
+package jagongadpro.keranjang.controller;
 
-// import com.fasterxml.jackson.core.type.TypeReference;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import jagongadpro.keranjang.dto.KeranjangResponse;
-// import jagongadpro.keranjang.model.ShoppingCart;
-// import jagongadpro.keranjang.service.ShoppingCartService;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
+import jagongadpro.keranjang.dto.KeranjangResponse;
+import jagongadpro.keranjang.service.ShoppingCartService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-// import java.util.HashMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import java.util.Map;
 
-// @SpringBootTest
-// @AutoConfigureMockMvc
-// public class ShoppingCartControllerTest {
+@WebMvcTest(ShoppingCartController.class)
+public class ShoppingCartControllerTest {
 
-//     @Autowired
-//     private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-//     @Autowired
-//     private ObjectMapper objectMapper;
+    @MockBean
+    private ShoppingCartService shoppingCartService;
 
-//     @Autowired
-//     private ShoppingCartService shoppingCartService;  
+    private KeranjangResponse sampleResponse;
 
-//     @BeforeEach
-//     void setUp() {
+    @BeforeEach
+    public void setUp() {
+        sampleResponse = new KeranjangResponse("test@example.com", Map.of("item1", 2), 200.0);
+    }
 
-//     }
+    @Test
+    public void testHome() throws Exception {
+        mockMvc.perform(get("/api/cart"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Welcome to the Shopping Cart API"));
+    }
 
-//     @Test
-//     public void testAddItem() throws Exception {
-//         mockMvc.perform(post("/api/cart/add")
-//                 .param("email", "user@example.com")
-//                 .param("itemId", "100")
-//                 .param("quantity", "2")
-//                 .contentType(MediaType.APPLICATION_JSON))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.email").value("user@example.com"))
-//                 .andExpect(jsonPath("$.totalPrice").isNumber())
-//                 .andDo(print());
-//     }
+    @Test
+    public void testAddItem() throws Exception {
+        when(shoppingCartService.addItem(anyString(), anyString(), eq(2))).thenReturn(sampleResponse);
 
-//     @Test
-//     public void testRemoveItem() throws Exception {
-//         mockMvc.perform(delete("/api/cart/remove")
-//                 .param("email", "user@example.com")
-//                 .param("itemId", "100")
-//                 .contentType(MediaType.APPLICATION_JSON))
-//                 .andExpect(status().isOk())
-//                 .andDo(print());
-//     }
+        mockMvc.perform(post("/api/cart/add")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1")
+                        .param("quantity", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
 
-//     @Test
-//     public void testUpdateItem() throws Exception {
-//         mockMvc.perform(put("/api/cart/update")
-//                 .param("email", "user@example.com")
-//                 .param("itemId", "100")
-//                 .param("quantity", "5")
-//                 .contentType(MediaType.APPLICATION_JSON))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.totalPrice").isNumber())
-//                 .andDo(print());
-//     }
+    @Test
+    public void testAddItem_withInvalidArgument() throws Exception {
+        when(shoppingCartService.addItem(anyString(), anyString(), eq(2))).thenThrow(new IllegalArgumentException("Invalid item"));
 
-//     @Test
-//     public void testViewCart() throws Exception {
-//         mockMvc.perform(get("/api/cart/view/user@example.com")
-//                 .contentType(MediaType.APPLICATION_JSON))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.email").value("user@example.com"))
-//                 .andDo(print());
-//     }
+        mockMvc.perform(post("/api/cart/add")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1")
+                        .param("quantity", "2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid item"));
+    }
 
-//     @Test
-//     public void testClearCart() throws Exception {
-//         mockMvc.perform(delete("/api/cart/clear/user@example.com")
-//                 .contentType(MediaType.APPLICATION_JSON))
-//                 .andExpect(status().isOk())
-//                 .andDo(print());
-//     }
-// }
+    @Test
+    public void testRemoveItem() throws Exception {
+        doNothing().when(shoppingCartService).deleteItem(anyString(), anyString());
+
+        mockMvc.perform(delete("/api/cart/remove")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateItem() throws Exception {
+        when(shoppingCartService.updateItem(anyString(), anyString(), eq(3))).thenReturn(sampleResponse);
+
+        mockMvc.perform(put("/api/cart/update")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1")
+                        .param("quantity", "3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
+
+    @Test
+    public void testViewCart() throws Exception {
+        when(shoppingCartService.findCartByEmail(anyString())).thenReturn(sampleResponse);
+
+        mockMvc.perform(get("/api/cart/view/test@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
+
+    @Test
+    public void testViewCart_notFound() throws Exception {
+        when(shoppingCartService.findCartByEmail(anyString())).thenReturn(null);
+
+        mockMvc.perform(get("/api/cart/view/test@example.com"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testClearCart() throws Exception {
+        doNothing().when(shoppingCartService).clearCart(anyString());
+
+        mockMvc.perform(delete("/api/cart/clear/test@example.com"))
+                .andExpect(status().isOk());
+    }
+}
