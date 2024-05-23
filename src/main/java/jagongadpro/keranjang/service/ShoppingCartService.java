@@ -1,5 +1,6 @@
 package jagongadpro.keranjang.service;
 
+import jagongadpro.keranjang.config.GameApiProperties;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -41,22 +41,28 @@ public class ShoppingCartService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${game.api.url}")
-    private String gameApiUrl;
+    private final GameApiProperties gameApiProperties;
+
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
                                @Qualifier("normalPricingStrategy") BillingStrategy normalStrategy,
-                               RestTemplate restTemplate) {
+                               RestTemplate restTemplate,
+                               GameApiProperties gameApiProperties) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.discountStrategy = discountStrategy;
         this.normalStrategy = normalStrategy;
         this.restTemplate = restTemplate;
+        this.gameApiProperties = gameApiProperties;
         setBillingStrategy();
     }
 
     public void setBillingStrategy() {
         this.billingStrategy = LocalDate.now().getDayOfMonth() == 1 ? discountStrategy : normalStrategy;
+    }
+
+    public void printGameApiUrl() {
+        System.out.println("Game API URL: " + gameApiProperties.getUrl());
     }
 
     @Scheduled(cron = "0 0 0 1 * ?")
@@ -142,7 +148,7 @@ public class ShoppingCartService {
 
     private Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
-                gameApiUrl,
+                "http://35.240.130.147/api/games/get-all",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {}
