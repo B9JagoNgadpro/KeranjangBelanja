@@ -344,8 +344,8 @@ public class ShoppingCartServiceTest {
         itemPrices.put("item1", 10.0);
         itemPrices.put("item2", 20.0);
 
-        when(discountStrategy.calculateTotal(eq(cart1.getItems()), eq(itemPrices))).thenReturn(20.0);
-        when(discountStrategy.calculateTotal(eq(cart2.getItems()), eq(itemPrices))).thenReturn(60.0);
+        when(discountStrategy.calculateTotal(eq(cart1.getItems()), eq(itemPrices))).thenReturn(0.0);
+        when(discountStrategy.calculateTotal(eq(cart2.getItems()), eq(itemPrices))).thenReturn(0.0);
 
         CompletableFuture<Void> future = shoppingCartService.applyDiscountsToAllCarts();
 
