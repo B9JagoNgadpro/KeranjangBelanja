@@ -1,10 +1,10 @@
 package jagongadpro.keranjang.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@ConfigurationProperties(prefix = "game")
+@Component
+@ConfigurationProperties(prefix = "game.api")
 public class GameApiProperties {
     private String url;
 

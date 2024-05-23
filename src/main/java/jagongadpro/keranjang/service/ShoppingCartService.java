@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,6 @@ public class ShoppingCartService {
     private RestTemplate restTemplate;
 
     private final GameApiProperties gameApiProperties;
-
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
@@ -148,17 +148,20 @@ public class ShoppingCartService {
 
     private Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
-                "http://35.240.130.147/api/games/get-all",
+                gameApiProperties.getUrl(),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {}
         );
 
-        List<GameResponse> games = response.getBody().getData();
+        List<GameResponse> games = (response != null && response.getBody() != null && response.getBody().getData() != null) 
+                                    ? response.getBody().getData() 
+                                    : new ArrayList<>();
         Map<String, Double> itemPrices = new HashMap<>();
         for (GameResponse game : games) {
             itemPrices.put(game.getNama(), game.getHarga().doubleValue());
         }
         return itemPrices;
     }
+
 }

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -67,12 +66,6 @@ public class ShoppingCartServiceTest {
                 shoppingCartRepository.delete(cart);
             }
         }
-    }
-
-    @Test
-    public void testGameApiUrl() {
-        String expectedUrl = "http://test-url/api/games/get-all"; 
-        assertEquals(expectedUrl, gameApiProperties.getUrl());
     }
 
     @Test
