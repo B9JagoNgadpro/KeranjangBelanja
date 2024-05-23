@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -39,6 +40,9 @@ public class ShoppingCartService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${game.api.url}")
+    private String gameApiUrl;
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
@@ -138,7 +142,7 @@ public class ShoppingCartService {
 
     private Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
-                "http://35.240.130.147/api/games/get-all",
+                gameApiUrl,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {}
