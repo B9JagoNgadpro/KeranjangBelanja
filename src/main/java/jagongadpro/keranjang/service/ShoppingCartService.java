@@ -61,10 +61,6 @@ public class ShoppingCartService {
         this.billingStrategy = LocalDate.now().getDayOfMonth() == 1 ? discountStrategy : normalStrategy;
     }
 
-    public void printGameApiUrl() {
-        System.out.println("Game API URL: " + gameApiProperties.getUrl());
-    }
-
     @Scheduled(cron = "0 0 0 1 * ?")
     @Async
     public CompletableFuture<Void> applyDiscountsToAllCarts() {
