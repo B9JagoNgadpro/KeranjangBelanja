@@ -8,13 +8,13 @@ import jagongadpro.keranjang.dto.WebResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -30,9 +30,11 @@ public class ShoppingCartService {
     private BillingStrategy billingStrategy;
 
     @Autowired
+    @Qualifier("discountPricingStrategy")
     private BillingStrategy discountStrategy;
 
     @Autowired
+    @Qualifier("normalPricingStrategy")
     private BillingStrategy normalStrategy;
 
     @Autowired
@@ -50,12 +52,7 @@ public class ShoppingCartService {
     }
 
     public void setBillingStrategy() {
-        if (LocalDate.now().getDayOfMonth() == 1) {
-            this.billingStrategy = discountStrategy;
-            applyDiscountsToAllCarts();
-        } else {
-            this.billingStrategy = normalStrategy;
-        }
+        this.billingStrategy = LocalDate.now().getDayOfMonth() == 1 ? discountStrategy : normalStrategy;
     }
 
     @Scheduled(cron = "0 0 0 1 * ?")
