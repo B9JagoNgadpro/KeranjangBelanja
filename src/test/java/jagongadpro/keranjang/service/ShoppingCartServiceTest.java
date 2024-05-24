@@ -1,8 +1,8 @@
 package jagongadpro.keranjang.service;
 
 import jagongadpro.keranjang.config.GameApiProperties;
-import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.dto.GameResponse;
+import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.dto.WebResponse;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,6 @@ public class ShoppingCartServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        shoppingCartService.setBillingStrategy();
     }
 
     @AfterEach
@@ -72,25 +70,32 @@ public class ShoppingCartServiceTest {
 
     @Test
     public void testSetBillingStrategyFirstDayOfMonth() {
-        LocalDate firstDay = LocalDate.now().with(ChronoField.DAY_OF_MONTH, 1);
-        mockDate(firstDay);
-
+        LocalDate firstDay = LocalDate.of(2024, 1, 1);
+        shoppingCartService.setCurrentDate(firstDay);
         shoppingCartService.setBillingStrategy();
         assertEquals(discountStrategy, shoppingCartService.getBillingStrategy());
     }
 
     @Test
     public void testSetBillingStrategyOtherDayOfMonth() {
-        LocalDate otherDay = LocalDate.now().with(ChronoField.DAY_OF_MONTH, 2);
-        mockDate(otherDay);
-
+        LocalDate otherDay = LocalDate.of(2024, 1, 2);
+        shoppingCartService.setCurrentDate(otherDay);
         shoppingCartService.setBillingStrategy();
         assertEquals(normalStrategy, shoppingCartService.getBillingStrategy());
     }
 
-    private void mockDate(LocalDate mockDate) {
-        // Use a library like PowerMockito to mock LocalDate.now()
-        // This is a placeholder for the logic to control LocalDate.now() in tests
+    @Test
+    public void testSetCurrentDateFirstDayOfMonth() {
+        LocalDate firstDay = LocalDate.of(2024, 1, 1);
+        shoppingCartService.setCurrentDate(firstDay);
+        assertEquals(firstDay, shoppingCartService.getCurrentDate());
+    }
+
+    @Test
+    public void testSetCurrentDateOtherDayOfMonth() {
+        LocalDate otherDay = LocalDate.of(2024, 1, 2);
+        shoppingCartService.setCurrentDate(otherDay);
+        assertEquals(otherDay, shoppingCartService.getCurrentDate());
     }
 
     @Test
