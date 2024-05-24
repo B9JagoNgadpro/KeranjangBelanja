@@ -61,6 +61,10 @@ public class ShoppingCartService {
         this.billingStrategy = LocalDate.now().getDayOfMonth() == 1 ? discountStrategy : normalStrategy;
     }
 
+    public BillingStrategy getBillingStrategy() {
+        return billingStrategy;
+    }
+
     @Scheduled(cron = "0 0 0 1 * ?")
     @Async
     public CompletableFuture<Void> applyDiscountsToAllCarts() {

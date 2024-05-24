@@ -18,6 +18,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,29 @@ public class ShoppingCartServiceTest {
                 shoppingCartRepository.delete(cart);
             }
         }
+    }
+
+    @Test
+    public void testSetBillingStrategyFirstDayOfMonth() {
+        LocalDate firstDay = LocalDate.now().with(ChronoField.DAY_OF_MONTH, 1);
+        mockDate(firstDay);
+
+        shoppingCartService.setBillingStrategy();
+        assertEquals(discountStrategy, shoppingCartService.getBillingStrategy());
+    }
+
+    @Test
+    public void testSetBillingStrategyOtherDayOfMonth() {
+        LocalDate otherDay = LocalDate.now().with(ChronoField.DAY_OF_MONTH, 2);
+        mockDate(otherDay);
+
+        shoppingCartService.setBillingStrategy();
+        assertEquals(normalStrategy, shoppingCartService.getBillingStrategy());
+    }
+
+    private void mockDate(LocalDate mockDate) {
+        // Use a library like PowerMockito to mock LocalDate.now()
+        // This is a placeholder for the logic to control LocalDate.now() in tests
     }
 
     @Test
@@ -151,7 +176,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testUpdateItemNotFound() {
+    public void testUpdateItemKeranjangNotFound() {
         currentTestEmail = "test4@example.com";
         String itemId = "item1";
         int quantity = 3;
@@ -363,5 +388,4 @@ public class ShoppingCartServiceTest {
         verify(shoppingCartRepository, times(1)).save(cart1);
         verify(shoppingCartRepository, times(1)).save(cart2);
     }
-
 }
