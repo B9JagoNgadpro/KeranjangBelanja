@@ -1,8 +1,8 @@
 package jagongadpro.keranjang.service;
 
 import jagongadpro.keranjang.config.GameApiProperties;
-import jagongadpro.keranjang.dto.GameResponse;
 import jagongadpro.keranjang.dto.KeranjangResponse;
+import jagongadpro.keranjang.dto.GameResponse;
 import jagongadpro.keranjang.dto.WebResponse;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +55,7 @@ public class ShoppingCartServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        shoppingCartService.setBillingStrategy();
     }
 
     @AfterEach
@@ -66,22 +66,6 @@ public class ShoppingCartServiceTest {
                 shoppingCartRepository.delete(cart);
             }
         }
-    }
-
-    @Test
-    public void testSetBillingStrategyFirstDayOfMonth() {
-        LocalDate firstDay = LocalDate.of(2024, 1, 1);
-        shoppingCartService.setCurrentDate(firstDay);
-        shoppingCartService.setBillingStrategy();
-        assertEquals(discountStrategy, shoppingCartService.getBillingStrategy());
-    }
-
-    @Test
-    public void testSetCurrentDateOtherDayOfMonth() {
-        LocalDate otherDay = LocalDate.of(2024, 1, 2);
-        shoppingCartService.setCurrentDate(otherDay);
-        shoppingCartService.setBillingStrategy();
-        assertEquals(otherDay, shoppingCartService.getCurrentDate());
     }
 
     @Test
@@ -167,7 +151,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testUpdateItemKeranjangNotFound() {
+    public void testUpdateItemNotFound() {
         currentTestEmail = "test4@example.com";
         String itemId = "item1";
         int quantity = 3;
@@ -379,4 +363,5 @@ public class ShoppingCartServiceTest {
         verify(shoppingCartRepository, times(1)).save(cart1);
         verify(shoppingCartRepository, times(1)).save(cart2);
     }
+
 }

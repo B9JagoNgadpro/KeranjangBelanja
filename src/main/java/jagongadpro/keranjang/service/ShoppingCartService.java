@@ -1,20 +1,21 @@
 package jagongadpro.keranjang.service;
 
 import jagongadpro.keranjang.config.GameApiProperties;
-import jagongadpro.keranjang.dto.GameResponse;
-import jagongadpro.keranjang.dto.KeranjangResponse;
-import jagongadpro.keranjang.dto.WebResponse;
 import jagongadpro.keranjang.model.ShoppingCart;
+import jagongadpro.keranjang.dto.KeranjangResponse;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
+import jagongadpro.keranjang.dto.GameResponse;
+import jagongadpro.keranjang.dto.WebResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,8 +44,6 @@ public class ShoppingCartService {
 
     private final GameApiProperties gameApiProperties;
 
-    private LocalDate currentDate;
-
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
                                @Qualifier("normalPricingStrategy") BillingStrategy normalStrategy,
@@ -55,25 +54,11 @@ public class ShoppingCartService {
         this.normalStrategy = normalStrategy;
         this.restTemplate = restTemplate;
         this.gameApiProperties = gameApiProperties;
-        this.currentDate = LocalDate.now();
         setBillingStrategy();
-    }
-
-    public void setCurrentDate(LocalDate currentDate) {
-        this.currentDate = currentDate;
-        setBillingStrategy();
-    }
-
-    public LocalDate getCurrentDate() {
-        return this.currentDate;
     }
 
     public void setBillingStrategy() {
-        this.billingStrategy = this.currentDate.getDayOfMonth() == 1 ? discountStrategy : normalStrategy;
-    }
-
-    public BillingStrategy getBillingStrategy() {
-        return billingStrategy;
+        this.billingStrategy = LocalDate.now().getDayOfMonth() == 1 ? discountStrategy : normalStrategy;
     }
 
     @Scheduled(cron = "0 0 0 1 * ?")
@@ -86,13 +71,7 @@ public class ShoppingCartService {
             cart.setTotalPrice(totalPrice);
             shoppingCartRepository.save(cart);
         }
-        setCurrentDate(LocalDate.now());
         return CompletableFuture.completedFuture(null);
-    }
-
-    @Scheduled(cron = "0 0 0 2 * ?")
-    public void resetBillingStrategy() {
-        setCurrentDate(LocalDate.now());
     }
 
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
@@ -180,4 +159,5 @@ public class ShoppingCartService {
         }
         return itemPrices;
     }
+
 }
