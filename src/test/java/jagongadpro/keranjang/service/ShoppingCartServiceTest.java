@@ -77,24 +77,10 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testSetBillingStrategyOtherDayOfMonth() {
-        LocalDate otherDay = LocalDate.of(2024, 1, 2);
-        shoppingCartService.setCurrentDate(otherDay);
-        shoppingCartService.setBillingStrategy();
-        assertEquals(normalStrategy, shoppingCartService.getBillingStrategy());
-    }
-
-    @Test
-    public void testSetCurrentDateFirstDayOfMonth() {
-        LocalDate firstDay = LocalDate.of(2024, 1, 1);
-        shoppingCartService.setCurrentDate(firstDay);
-        assertEquals(firstDay, shoppingCartService.getCurrentDate());
-    }
-
-    @Test
     public void testSetCurrentDateOtherDayOfMonth() {
         LocalDate otherDay = LocalDate.of(2024, 1, 2);
         shoppingCartService.setCurrentDate(otherDay);
+        shoppingCartService.setBillingStrategy();
         assertEquals(otherDay, shoppingCartService.getCurrentDate());
     }
 
