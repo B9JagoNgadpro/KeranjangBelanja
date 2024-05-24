@@ -1,13 +1,13 @@
 package jagongadpro.keranjang;
 
-// import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class KeranjangApplicationTests {
+@SpringBootTest()
+class KeranjangAplicationTests {
 
-    // @Test
-    // void contextLoads() {
+	@Test
+	void contextLoads() {
+	}
 
-    // }
 }
