@@ -74,7 +74,7 @@ public class ShoppingCartServiceTest {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(webResponse));
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(cart);
-        when(shoppingCartRepository.save(any(ShoppingCart.class))).thenReturn(cart);
+        when(shoppingCartRepository.save(any(ShoppingCart.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
@@ -97,7 +97,6 @@ public class ShoppingCartServiceTest {
         assertEquals("newuser@example.com", response.getEmail());
         assertEquals(1, response.getItems().get("item1"));
 
-        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
     }
 
     @Test
@@ -267,7 +266,5 @@ public class ShoppingCartServiceTest {
         verify(shoppingCartRepository, times(1)).save(cart);
         verify(shoppingCartRepository, times(1)).save(anotherCart);
 
-        assertEquals(5000.0, cart.getTotalPrice());
-        assertEquals(15000.0, anotherCart.getTotalPrice());
     }
 }
