@@ -116,7 +116,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    public void deleteItem(String email, String itemId) {
+    public KeranjangResponse deleteItem(String email, String itemId) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
@@ -129,6 +129,7 @@ public class ShoppingCartService {
         cart.setTotalPrice(totalPrice);
 
         shoppingCartRepository.save(cart);
+        return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
     public KeranjangResponse findCartByEmail(String email) {
@@ -140,7 +141,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    public void clearCart(String email) {
+    public KeranjangResponse clearCart(String email) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
@@ -150,6 +151,7 @@ public class ShoppingCartService {
         cart.setTotalPrice(0.0);
 
         shoppingCartRepository.save(cart);
+        return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
     private Map<String, Double> getItemPrices() {
