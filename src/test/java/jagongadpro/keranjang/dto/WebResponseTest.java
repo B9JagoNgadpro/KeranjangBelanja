@@ -4,38 +4,38 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class WebResponseTest {
+ class WebResponseTest {
 
     @Test
-    public void testDefaultConstructor() {
+     void testDefaultConstructor() {
         WebResponse<String> response = new WebResponse<>();
         assertNull(response.getData());
         assertNull(response.getErrors());
     }
 
     @Test
-    public void testAllArgsConstructor() {
+     void testAllArgsConstructor() {
         WebResponse<String> response = new WebResponse<>("data", "errors");
         assertEquals("data", response.getData());
         assertEquals("errors", response.getErrors());
     }
 
     @Test
-    public void testSetData() {
+     void testSetData() {
         WebResponse<String> response = new WebResponse<>();
         response.setData("data");
         assertEquals("data", response.getData());
     }
 
     @Test
-    public void testSetErrors() {
+     void testSetErrors() {
         WebResponse<String> response = new WebResponse<>();
         response.setErrors("errors");
         assertEquals("errors", response.getErrors());
     }
 
     @Test
-    public void testToString() {
+     void testToString() {
         WebResponse<String> response = new WebResponse<>("data", "errors");
         assertEquals("WebResponse(data=data, errors=errors)", response.toString());
     }

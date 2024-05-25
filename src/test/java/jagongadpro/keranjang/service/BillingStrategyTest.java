@@ -9,10 +9,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class BillingStrategyTest {
+ class BillingStrategyTest {
 
     @Test
-    public void testCalculateTotal() {
+     void testCalculateTotal() {
         // Membuat mock dari BillingStrategy
         BillingStrategy billingStrategy = Mockito.mock(BillingStrategy.class);
 
@@ -39,7 +39,7 @@ public class BillingStrategyTest {
     }
 
     @Test
-    public void testCalculateTotalWithMissingPrice() {
+     void testCalculateTotalWithMissingPrice() {
         // Membuat mock dari BillingStrategy
         BillingStrategy billingStrategy = Mockito.mock(BillingStrategy.class);
 
@@ -66,7 +66,7 @@ public class BillingStrategyTest {
     }
 
     @Test
-    public void testCalculateTotalWithEmptyMaps() {
+     void testCalculateTotalWithEmptyMaps() {
         // Membuat mock dari BillingStrategy
         BillingStrategy billingStrategy = Mockito.mock(BillingStrategy.class);
 

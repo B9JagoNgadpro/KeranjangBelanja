@@ -25,7 +25,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
-public class ShoppingCartServiceTest {
+ class ShoppingCartServiceTest {
+
+    private static final String EMAIL_NOT_FOUND_MESSAGE = "Keranjang dengan email tersebut tidak ditemukan.";
+    private static final String ITEM_NOT_FOUND_MESSAGE = "Item tidak ditemukan dalam keranjang.";
 
     @Mock
     private ShoppingCartRepository shoppingCartRepository;
@@ -52,7 +55,7 @@ public class ShoppingCartServiceTest {
     private Map<String, Double> itemPrices;
 
     @BeforeEach
-    public void setUp() {
+     void setUp() {
         MockitoAnnotations.openMocks(this);
         cart = new ShoppingCart("test@example.com");
         cart.getItems().put("item1", 1);
@@ -78,7 +81,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testAddItem() {
+     void testAddItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
 
         KeranjangResponse response = shoppingCartService.addItem("test@example.com", "item1", 1);
@@ -88,7 +91,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testAddItemNewCart() {
+     void testAddItemNewCart() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
 
@@ -100,7 +103,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testUpdateItem() {
+     void testUpdateItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(30000.0);
 
         KeranjangResponse response = shoppingCartService.updateItem("test@example.com", "item1", 3);
@@ -110,29 +113,29 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testUpdateItemNotFound() {
+     void testUpdateItemNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.updateItem("test@example.com", "item1", 3);
         });
 
-        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+        assertEquals(ITEM_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testUpdateItemItemNotFound() {
+     void testUpdateItemItemNotFound() {
         cart.getItems().clear();
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.updateItem("test@example.com", "item1", 3);
         });
 
-        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+        assertEquals(ITEM_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testDeleteItem() {
+     void testDeleteItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
 
         KeranjangResponse response = shoppingCartService.deleteItem("test@example.com", "item1");
@@ -143,18 +146,18 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testDeleteItemNotFound() {
+     void testDeleteItemNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.deleteItem("test@example.com", "item1");
         });
 
-        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
+        assertEquals(EMAIL_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testIncrementItem() {
+     void testIncrementItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
 
         KeranjangResponse response = shoppingCartService.incrementItem("test@example.com", "item1");
@@ -164,7 +167,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testDecrementItemRemoveItem() {
+     void testDecrementItemRemoveItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
         cart.getItems().put("item1", 1);
 
@@ -176,7 +179,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testDecrementItemDecreaseQuantity() {
+     void testDecrementItemDecreaseQuantity() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
         cart.getItems().put("item1", 2);
 
@@ -188,51 +191,51 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testDecrementItemNotFound() {
+     void testDecrementItemNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.decrementItem("test@example.com", "item1");
         });
 
-        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+        assertEquals(ITEM_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testDecrementItemItemNotFound() {
+     void testDecrementItemItemNotFound() {
         cart.getItems().clear();
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.decrementItem("test@example.com", "item1");
         });
 
-        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+        assertEquals(ITEM_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testFindCartByEmailNotFound() {
+     void testFindCartByEmailNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.findCartByEmail("test@example.com");
         });
 
-        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
+        assertEquals(EMAIL_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testClearCartNotFound() {
+     void testClearCartNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCartService.clearCart("test@example.com");
         });
 
-        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
+        assertEquals(EMAIL_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 
     @Test
-    public void testFindCartByEmail() {
+     void testFindCartByEmail() {
         KeranjangResponse response = shoppingCartService.findCartByEmail("test@example.com");
 
         assertEquals("test@example.com", response.getEmail());
@@ -241,7 +244,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testClearCart() {
+     void testClearCart() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
 
         KeranjangResponse response = shoppingCartService.clearCart("test@example.com");
@@ -252,7 +255,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testApplyDiscountsToAllCarts() throws Exception {
+     void testApplyDiscountsToAllCarts() throws Exception {
         ShoppingCart anotherCart = new ShoppingCart("another@example.com");
         anotherCart.getItems().put("item2", 1);
         anotherCart.setTotalPrice(20000);
@@ -269,7 +272,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testGetItemPricesWhenResponseIsNull() {
+     void testGetItemPricesWhenResponseIsNull() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(null);
 
@@ -278,7 +281,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testGetItemPricesWhenResponseBodyIsNull() {
+     void testGetItemPricesWhenResponseBodyIsNull() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(null));
 
@@ -287,7 +290,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testGetItemPricesWhenResponseBodyDataIsNull() {
+     void testGetItemPricesWhenResponseBodyDataIsNull() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(new WebResponse<>(null, null)));
 
@@ -296,7 +299,7 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testGetItemPricesWhenResponseHasData() {
+     void testGetItemPricesWhenResponseHasData() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(webResponse));
 
