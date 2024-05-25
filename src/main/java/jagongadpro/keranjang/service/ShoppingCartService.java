@@ -80,18 +80,18 @@ public class ShoppingCartService {
             cart = new ShoppingCart(email);
         }
         cart.getItems().merge(itemId, quantity, Integer::sum);
-
+    
         Map<String, Double> itemPrices = getItemPrices();
-
+    
         Map<String, Integer> itemQuantities = new HashMap<>();
         cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
-
+    
         double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
         cart.setTotalPrice(totalPrice);
-
+    
         cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
-    }
+    }    
 
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
@@ -152,14 +152,15 @@ public class ShoppingCartService {
                 null,
                 new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {}
         );
-
+    
         List<GameResponse> games = (response != null && response.getBody() != null && response.getBody().getData() != null) 
                                     ? response.getBody().getData() 
                                     : new ArrayList<>();
         Map<String, Double> itemPrices = new HashMap<>();
         for (GameResponse game : games) {
-            itemPrices.put(game.getNama(), game.getHarga().doubleValue());
+            itemPrices.put(game.getId(), game.getHarga().doubleValue()); // Gunakan ID sebagai kunci
         }
         return itemPrices;
     }
+    
 }

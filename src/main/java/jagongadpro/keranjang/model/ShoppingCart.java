@@ -30,4 +30,9 @@ public class ShoppingCart {
         this.items = new HashMap<>();
         this.totalPrice = 0.0;
     }
+
+    public ShoppingCart() {
+        this.items = new HashMap<>();
+        this.totalPrice = 0.0;
+    }
 }
