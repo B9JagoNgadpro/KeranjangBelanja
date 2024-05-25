@@ -43,8 +43,8 @@ public class ShoppingCartController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/view")
-    public ResponseEntity<KeranjangResponse> viewCart(@RequestParam String email) {
+    @GetMapping("/view/{email}")
+    public ResponseEntity<KeranjangResponse> viewCart(@PathVariable String email) {
         KeranjangResponse response = shoppingCartService.findCartByEmail(email);  
         if (response != null) {
             return ResponseEntity.ok(response);
@@ -53,8 +53,8 @@ public class ShoppingCartController {
         }
     }
 
-    @DeleteMapping("/clear")
-    public ResponseEntity<Void> clearCart(@RequestParam String email) {
+    @DeleteMapping("/clear/{email}")
+    public ResponseEntity<Void> clearCart(@PathVariable String email) {
         shoppingCartService.clearCart(email);
         return ResponseEntity.ok().build();  
     }
