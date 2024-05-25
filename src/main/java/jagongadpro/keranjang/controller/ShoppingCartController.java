@@ -32,9 +32,9 @@ public class ShoppingCartController {
     }
     
     @DeleteMapping("/remove")
-    public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam String itemId) {
-        shoppingCartService.deleteItem(email, itemId);
-        return ResponseEntity.ok().build();  
+    public ResponseEntity<KeranjangResponse> removeItem(@RequestParam String email, @RequestParam String itemId) {
+        KeranjangResponse response = shoppingCartService.deleteItem(email, itemId);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/update")
@@ -54,9 +54,9 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping("/clear/{email}")
-    public ResponseEntity<Void> clearCart(@PathVariable String email) {
-        shoppingCartService.clearCart(email);
-        return ResponseEntity.ok().build();  
+    public ResponseEntity<KeranjangResponse> clearCart(@PathVariable String email) {
+        KeranjangResponse response = shoppingCartService.clearCart(email);
+        return ResponseEntity.ok(response);
     }
 
 }
