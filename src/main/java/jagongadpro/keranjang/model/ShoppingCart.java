@@ -1,11 +1,16 @@
 package jagongadpro.keranjang.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Map;
 import java.util.HashMap;
 
 @Entity
 @Table(name = "shopping_carts")
+@Getter
+@Setter
 public class ShoppingCart {
     @Id
     @Column(name = "email", nullable = false)
@@ -31,30 +36,4 @@ public class ShoppingCart {
         this.items = new HashMap<>();
         this.totalPrice = 0.0;
     }
-
-    // Getter and Setter methods
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Map<String, Integer> getItems() {
-        return items;
-    }
-
-    public void setItems(Map<String, Integer> items) {
-        this.items = items;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
 }
-

@@ -78,9 +78,10 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             cart = new ShoppingCart(email);
-        } else {
-            cart.setEmail(email); 
         }
+    
+        cart.setEmail(email);
+    
         cart.getItems().merge(itemId, quantity, Integer::sum);
     
         Map<String, Double> itemPrices = getItemPrices();
@@ -92,6 +93,7 @@ public class ShoppingCartService {
         cart.setTotalPrice(totalPrice);
     
         cart = shoppingCartRepository.save(cart);
+    
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
