@@ -82,7 +82,7 @@ public class ShoppingCartService {
         }
 
         cart.setEmail(email);
-
+        
         // Update atau tambah item dalam keranjang
         cart.getItems().merge(itemId, quantity, Integer::sum);
 
