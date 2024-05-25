@@ -74,6 +74,11 @@ public class ShoppingCartService {
         return CompletableFuture.completedFuture(null);
     }
 
+    public ShoppingCart createCart(String email) {
+        ShoppingCart cart = new ShoppingCart(email);
+        return shoppingCartRepository.save(cart);
+    }
+
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
@@ -159,5 +164,4 @@ public class ShoppingCartService {
         }
         return itemPrices;
     }
-
 }

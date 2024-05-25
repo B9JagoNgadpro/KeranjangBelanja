@@ -1,6 +1,7 @@
 package jagongadpro.keranjang.controller;
 
 import jagongadpro.keranjang.dto.KeranjangResponse;
+import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.service.ShoppingCartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +58,15 @@ public class ShoppingCartController {
     public ResponseEntity<Void> clearCart(@PathVariable String email) {
         shoppingCartService.clearCart(email);
         return ResponseEntity.ok().build();  
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ShoppingCart> createCart(@RequestParam String email) {
+        ShoppingCart cart = shoppingCartService.createCart(email);
+        if (cart != null) {
+            return ResponseEntity.ok(cart);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
