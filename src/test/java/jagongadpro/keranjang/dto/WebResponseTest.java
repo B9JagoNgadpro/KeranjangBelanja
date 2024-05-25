@@ -1,55 +1,42 @@
 package jagongadpro.keranjang.dto;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WebResponseTest {
 
     @Test
-    public void testWebResponseConstructorAndGetters() {
-        WebResponse<String> webResponse = new WebResponse<>("data", "error");
-
-        assertEquals("data", webResponse.getData());
-        assertEquals("error", webResponse.getErrors());
+    public void testDefaultConstructor() {
+        WebResponse<String> response = new WebResponse<>();
+        assertNull(response.getData());
+        assertNull(response.getErrors());
     }
 
     @Test
-    public void testWebResponseSetters() {
-        WebResponse<String> webResponse = new WebResponse<>();
-        webResponse.setData("data");
-        webResponse.setErrors("error");
-
-        assertEquals("data", webResponse.getData());
-        assertEquals("error", webResponse.getErrors());
+    public void testAllArgsConstructor() {
+        WebResponse<String> response = new WebResponse<>("data", "errors");
+        assertEquals("data", response.getData());
+        assertEquals("errors", response.getErrors());
     }
 
     @Test
-    public void testWebResponseBuilder() {
-        WebResponse<String> webResponse = WebResponse.<String>builder()
-                .data("data")
-                .errors("error")
-                .build();
-
-        assertEquals("data", webResponse.getData());
-        assertEquals("error", webResponse.getErrors());
+    public void testSetData() {
+        WebResponse<String> response = new WebResponse<>();
+        response.setData("data");
+        assertEquals("data", response.getData());
     }
 
     @Test
-    public void testWebResponseBuilderEmpty() {
-        WebResponse<String> webResponse = WebResponse.<String>builder().build();
-
-        assertNull(webResponse.getData());
-        assertNull(webResponse.getErrors());
+    public void testSetErrors() {
+        WebResponse<String> response = new WebResponse<>();
+        response.setErrors("errors");
+        assertEquals("errors", response.getErrors());
     }
 
     @Test
-    public void testWebResponseToString() {
-        WebResponse<String> webResponse = WebResponse.<String>builder()
-                .data("data")
-                .errors("error")
-                .build();
-
-        String expectedString = "WebResponse(data=data, errors=error)";
-        assertEquals(expectedString, webResponse.toString());
+    public void testToString() {
+        WebResponse<String> response = new WebResponse<>("data", "errors");
+        assertEquals("WebResponse(data=data, errors=errors)", response.toString());
     }
 }

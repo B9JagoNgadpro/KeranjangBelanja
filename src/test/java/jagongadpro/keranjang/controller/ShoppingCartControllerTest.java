@@ -9,14 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Map;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.Map;
 
 @WebMvcTest(ShoppingCartController.class)
 public class ShoppingCartControllerTest {
@@ -28,10 +27,12 @@ public class ShoppingCartControllerTest {
     private ShoppingCartService shoppingCartService;
 
     private KeranjangResponse sampleResponse;
+    private KeranjangResponse emptyResponse;
 
     @BeforeEach
     public void setUp() {
         sampleResponse = new KeranjangResponse("test@example.com", Map.of("item1", 2), 200.0);
+        emptyResponse = new KeranjangResponse("test@example.com", Map.of(), 0.0);
     }
 
     @Test
@@ -68,13 +69,42 @@ public class ShoppingCartControllerTest {
     }
 
     @Test
+    public void testIncrementItem() throws Exception {
+        when(shoppingCartService.incrementItem(anyString(), anyString())).thenReturn(sampleResponse);
+
+        mockMvc.perform(post("/api/cart/increment")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
+
+    @Test
+    public void testDecrementItem() throws Exception {
+        when(shoppingCartService.decrementItem(anyString(), anyString())).thenReturn(sampleResponse);
+
+        mockMvc.perform(post("/api/cart/decrement")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
+
+    @Test
     public void testRemoveItem() throws Exception {
-        doNothing().when(shoppingCartService).deleteItem(anyString(), anyString());
+        when(shoppingCartService.deleteItem(anyString(), anyString())).thenReturn(sampleResponse);
 
         mockMvc.perform(delete("/api/cart/remove")
                         .param("email", "test@example.com")
                         .param("itemId", "item1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
     }
 
     @Test
@@ -112,9 +142,12 @@ public class ShoppingCartControllerTest {
 
     @Test
     public void testClearCart() throws Exception {
-        doNothing().when(shoppingCartService).clearCart(anyString());
+        when(shoppingCartService.clearCart(anyString())).thenReturn(emptyResponse);
 
         mockMvc.perform(delete("/api/cart/clear/test@example.com"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items").isEmpty())
+                .andExpect(jsonPath("$.totalPrice").value(0.0));
     }
 }

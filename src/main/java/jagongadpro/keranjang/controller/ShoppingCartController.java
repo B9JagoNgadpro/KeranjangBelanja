@@ -20,7 +20,7 @@ public class ShoppingCartController {
     public ResponseEntity<String> home() {
         return ResponseEntity.ok("Welcome to the Shopping Cart API");
     }
-    
+
     @PostMapping("/add")
     public ResponseEntity<?> addItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
         try {
@@ -31,10 +31,22 @@ public class ShoppingCartController {
         }
     }
 
+    @PostMapping("/increment")
+    public ResponseEntity<KeranjangResponse> incrementItem(@RequestParam String email, @RequestParam String itemId) {
+        KeranjangResponse response = shoppingCartService.incrementItem(email, itemId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/decrement")
+    public ResponseEntity<KeranjangResponse> decrementItem(@RequestParam String email, @RequestParam String itemId) {
+        KeranjangResponse response = shoppingCartService.decrementItem(email, itemId);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/remove")
-    public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam String itemId) {
-        shoppingCartService.deleteItem(email, itemId);
-        return ResponseEntity.ok().build();  
+    public ResponseEntity<KeranjangResponse> removeItem(@RequestParam String email, @RequestParam String itemId) {
+        KeranjangResponse response = shoppingCartService.deleteItem(email, itemId);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/update")
@@ -45,7 +57,7 @@ public class ShoppingCartController {
 
     @GetMapping("/view/{email}")
     public ResponseEntity<KeranjangResponse> viewCart(@PathVariable String email) {
-        KeranjangResponse response = shoppingCartService.findCartByEmail(email);  
+        KeranjangResponse response = shoppingCartService.findCartByEmail(email);
         if (response != null) {
             return ResponseEntity.ok(response);
         } else {
@@ -54,8 +66,8 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping("/clear/{email}")
-    public ResponseEntity<Void> clearCart(@PathVariable String email) {
-        shoppingCartService.clearCart(email);
-        return ResponseEntity.ok().build();  
+    public ResponseEntity<KeranjangResponse> clearCart(@PathVariable String email) {
+        KeranjangResponse response = shoppingCartService.clearCart(email);
+        return ResponseEntity.ok(response);
     }
 }
