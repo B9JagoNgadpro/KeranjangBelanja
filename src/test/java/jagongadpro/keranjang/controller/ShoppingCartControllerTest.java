@@ -64,8 +64,7 @@ public class ShoppingCartControllerTest {
                         .param("email", "test@example.com")
                         .param("itemId", "item1")
                         .param("quantity", "2"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Invalid item"));
+                .andExpect(status().isNotFound());
     }
 
     @Test

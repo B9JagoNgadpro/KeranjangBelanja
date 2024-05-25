@@ -177,7 +177,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    private Map<String, Double> getItemPrices() {
+    Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
                 gameApiProperties.getUrl(),
                 HttpMethod.GET,

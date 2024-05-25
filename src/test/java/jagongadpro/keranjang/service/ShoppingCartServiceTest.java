@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("unchecked")
 public class ShoppingCartServiceTest {
 
     @Mock
@@ -50,7 +51,6 @@ public class ShoppingCartServiceTest {
     private WebResponse<List<GameResponse>> webResponse;
     private Map<String, Double> itemPrices;
 
-    @SuppressWarnings("unchecked")
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -266,5 +266,42 @@ public class ShoppingCartServiceTest {
         verify(shoppingCartRepository, times(1)).save(cart);
         verify(shoppingCartRepository, times(1)).save(anotherCart);
 
+    }
+
+    @Test
+    public void testGetItemPricesWhenResponseIsNull() {
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
+                .thenReturn(null);
+
+        Map<String, Double> prices = shoppingCartService.getItemPrices();
+        assertTrue(prices.isEmpty());
+    }
+
+    @Test
+    public void testGetItemPricesWhenResponseBodyIsNull() {
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
+                .thenReturn(ResponseEntity.ok(null));
+
+        Map<String, Double> prices = shoppingCartService.getItemPrices();
+        assertTrue(prices.isEmpty());
+    }
+
+    @Test
+    public void testGetItemPricesWhenResponseBodyDataIsNull() {
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
+                .thenReturn(ResponseEntity.ok(new WebResponse<>(null, null)));
+
+        Map<String, Double> prices = shoppingCartService.getItemPrices();
+        assertTrue(prices.isEmpty());
+    }
+
+    @Test
+    public void testGetItemPricesWhenResponseHasData() {
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
+                .thenReturn(ResponseEntity.ok(webResponse));
+
+        Map<String, Double> prices = shoppingCartService.getItemPrices();
+        assertFalse(prices.isEmpty());
+        assertEquals(10000.0, prices.get("8eb561a5-eed0-416e-965b-9b318ee1869e"));
     }
 }
