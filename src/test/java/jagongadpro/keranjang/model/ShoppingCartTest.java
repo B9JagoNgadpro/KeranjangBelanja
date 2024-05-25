@@ -2,38 +2,50 @@ package jagongadpro.keranjang.model;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ShoppingCartTest {
 
     @Test
-    public void testShoppingCartConstructorAndGetters() {
-        String email = "test@example.com";
-        ShoppingCart cart = new ShoppingCart(email);
-
-        assertThat(cart.getEmail()).isEqualTo(email);
-        assertThat(cart.getItems()).isEmpty();
-        assertThat(cart.getTotalPrice()).isEqualTo(0.0);
+    public void testDefaultConstructor() {
+        ShoppingCart cart = new ShoppingCart();
+        assertNotNull(cart.getItems());
+        assertTrue(cart.getItems().isEmpty());
+        assertEquals(0.0, cart.getTotalPrice());
     }
 
     @Test
-    public void testShoppingCartSetters() {
-        String email = "test@example.com";
-        ShoppingCart cart = new ShoppingCart(email);
+    public void testConstructorWithEmail() {
+        ShoppingCart cart = new ShoppingCart("test@example.com");
+        assertEquals("test@example.com", cart.getEmail());
+        assertNotNull(cart.getItems());
+        assertTrue(cart.getItems().isEmpty());
+        assertEquals(0.0, cart.getTotalPrice());
+    }
 
+    @Test
+    public void testSetEmail() {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setEmail("test@example.com");
+        assertEquals("test@example.com", cart.getEmail());
+    }
+
+    @Test
+    public void testSetItems() {
+        ShoppingCart cart = new ShoppingCart();
         Map<String, Integer> items = new HashMap<>();
         items.put("item1", 2);
-        items.put("item2", 3);
         cart.setItems(items);
+        assertEquals(items, cart.getItems());
+    }
 
-        cart.setTotalPrice(50.0);
-
-        assertThat(cart.getItems()).hasSize(2);
-        assertThat(cart.getItems().get("item1")).isEqualTo(2);
-        assertThat(cart.getItems().get("item2")).isEqualTo(3);
-        assertThat(cart.getTotalPrice()).isEqualTo(50.0);
+    @Test
+    public void testSetTotalPrice() {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setTotalPrice(100.0);
+        assertEquals(100.0, cart.getTotalPrice());
     }
 }

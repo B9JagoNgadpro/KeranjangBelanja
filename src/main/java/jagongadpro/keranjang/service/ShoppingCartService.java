@@ -1,12 +1,11 @@
 package jagongadpro.keranjang.service;
 
 import jagongadpro.keranjang.config.GameApiProperties;
-import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.dto.KeranjangResponse;
+import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
 import jagongadpro.keranjang.dto.GameResponse;
 import jagongadpro.keranjang.dto.WebResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -74,7 +73,6 @@ public class ShoppingCartService {
         return CompletableFuture.completedFuture(null);
     }
 
-
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
@@ -132,6 +130,31 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
+    public KeranjangResponse incrementItem(String email, String itemId) {
+        return addItem(email, itemId, 1);
+    }
+
+    public KeranjangResponse decrementItem(String email, String itemId) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart == null || !cart.getItems().containsKey(itemId)) {
+            throw new IllegalArgumentException("Item tidak ditemukan dalam keranjang.");
+        }
+
+        int currentQuantity = cart.getItems().get(itemId);
+        if (currentQuantity <= 1) {
+            cart.getItems().remove(itemId);
+        } else {
+            cart.getItems().put(itemId, currentQuantity - 1);
+        }
+
+        Map<String, Double> itemPrices = getItemPrices();
+        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
+        cart.setTotalPrice(totalPrice);
+
+        shoppingCartRepository.save(cart);
+        return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
+    }
+
     public KeranjangResponse findCartByEmail(String email) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
@@ -161,15 +184,14 @@ public class ShoppingCartService {
                 null,
                 new ParameterizedTypeReference<WebResponse<List<GameResponse>>>() {}
         );
-    
-        List<GameResponse> games = (response != null && response.getBody() != null && response.getBody().getData() != null) 
-                                    ? response.getBody().getData() 
-                                    : new ArrayList<>();
+
+        List<GameResponse> games = (response != null && response.getBody() != null && response.getBody().getData() != null)
+                ? response.getBody().getData()
+                : new ArrayList<>();
         Map<String, Double> itemPrices = new HashMap<>();
         for (GameResponse game : games) {
             itemPrices.put(game.getId(), game.getHarga().doubleValue()); // Gunakan ID sebagai kunci
         }
         return itemPrices;
     }
-    
 }

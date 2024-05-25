@@ -20,7 +20,7 @@ public class ShoppingCartController {
     public ResponseEntity<String> home() {
         return ResponseEntity.ok("Welcome to the Shopping Cart API");
     }
-    
+
     @PostMapping("/add")
     public ResponseEntity<?> addItem(@RequestParam String email, @RequestParam String itemId, @RequestParam int quantity) {
         try {
@@ -30,7 +30,19 @@ public class ShoppingCartController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-    
+
+    @PostMapping("/increment")
+    public ResponseEntity<KeranjangResponse> incrementItem(@RequestParam String email, @RequestParam String itemId) {
+        KeranjangResponse response = shoppingCartService.incrementItem(email, itemId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/decrement")
+    public ResponseEntity<KeranjangResponse> decrementItem(@RequestParam String email, @RequestParam String itemId) {
+        KeranjangResponse response = shoppingCartService.decrementItem(email, itemId);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/remove")
     public ResponseEntity<KeranjangResponse> removeItem(@RequestParam String email, @RequestParam String itemId) {
         KeranjangResponse response = shoppingCartService.deleteItem(email, itemId);
@@ -45,7 +57,7 @@ public class ShoppingCartController {
 
     @GetMapping("/view/{email}")
     public ResponseEntity<KeranjangResponse> viewCart(@PathVariable String email) {
-        KeranjangResponse response = shoppingCartService.findCartByEmail(email);  
+        KeranjangResponse response = shoppingCartService.findCartByEmail(email);
         if (response != null) {
             return ResponseEntity.ok(response);
         } else {
@@ -58,5 +70,4 @@ public class ShoppingCartController {
         KeranjangResponse response = shoppingCartService.clearCart(email);
         return ResponseEntity.ok(response);
     }
-
 }

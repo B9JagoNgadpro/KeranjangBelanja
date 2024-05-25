@@ -69,6 +69,32 @@ public class ShoppingCartControllerTest {
     }
 
     @Test
+    public void testIncrementItem() throws Exception {
+        when(shoppingCartService.incrementItem(anyString(), anyString())).thenReturn(sampleResponse);
+
+        mockMvc.perform(post("/api/cart/increment")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
+
+    @Test
+    public void testDecrementItem() throws Exception {
+        when(shoppingCartService.decrementItem(anyString(), anyString())).thenReturn(sampleResponse);
+
+        mockMvc.perform(post("/api/cart/decrement")
+                        .param("email", "test@example.com")
+                        .param("itemId", "item1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.items.item1").value(2))
+                .andExpect(jsonPath("$.totalPrice").value(200.0));
+    }
+
+    @Test
     public void testRemoveItem() throws Exception {
         when(shoppingCartService.deleteItem(anyString(), anyString())).thenReturn(sampleResponse);
 
