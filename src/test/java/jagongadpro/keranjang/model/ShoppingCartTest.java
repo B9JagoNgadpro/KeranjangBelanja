@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShoppingCartTest {
+ class ShoppingCartTest {
 
     @Test
-    public void testDefaultConstructor() {
+     void testDefaultConstructor() {
         ShoppingCart cart = new ShoppingCart();
         assertNotNull(cart.getItems());
         assertTrue(cart.getItems().isEmpty());
@@ -18,7 +18,7 @@ public class ShoppingCartTest {
     }
 
     @Test
-    public void testConstructorWithEmail() {
+     void testConstructorWithEmail() {
         ShoppingCart cart = new ShoppingCart("test@example.com");
         assertEquals("test@example.com", cart.getEmail());
         assertNotNull(cart.getItems());
@@ -27,14 +27,14 @@ public class ShoppingCartTest {
     }
 
     @Test
-    public void testSetEmail() {
+     void testSetEmail() {
         ShoppingCart cart = new ShoppingCart();
         cart.setEmail("test@example.com");
         assertEquals("test@example.com", cart.getEmail());
     }
 
     @Test
-    public void testSetItems() {
+     void testSetItems() {
         ShoppingCart cart = new ShoppingCart();
         Map<String, Integer> items = new HashMap<>();
         items.put("item1", 2);
@@ -43,7 +43,7 @@ public class ShoppingCartTest {
     }
 
     @Test
-    public void testSetTotalPrice() {
+     void testSetTotalPrice() {
         ShoppingCart cart = new ShoppingCart();
         cart.setTotalPrice(100.0);
         assertEquals(100.0, cart.getTotalPrice());

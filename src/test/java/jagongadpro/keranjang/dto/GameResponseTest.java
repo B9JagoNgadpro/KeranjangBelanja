@@ -3,10 +3,10 @@ package jagongadpro.keranjang.dto;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameResponseTest {
+ class GameResponseTest {
 
     @Test
-    public void testGameResponseGettersAndSetters() {
+     void testGameResponseGettersAndSetters() {
         GameResponse gameResponse = new GameResponse();
         gameResponse.setId("1");
         gameResponse.setNama("Game 1");

@@ -8,17 +8,17 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NormalPricingStrategyTest {
+ class NormalPricingStrategyTest {
 
     private NormalPricingStrategy normalPricingStrategy;
 
     @BeforeEach
-    public void setUp() {
+     void setUp() {
         normalPricingStrategy = new NormalPricingStrategy();
     }
 
     @Test
-    public void testCalculateTotal() {
+     void testCalculateTotal() {
         Map<String, Integer> itemQuantities = new HashMap<>();
         itemQuantities.put("item1", 2);
         itemQuantities.put("item2", 3);
@@ -34,7 +34,7 @@ public class NormalPricingStrategyTest {
     }
 
     @Test
-    public void testCalculateTotal_noPrice() {
+     void testCalculateTotal_noPrice() {
         Map<String, Integer> itemQuantities = new HashMap<>();
         itemQuantities.put("item1", 2);
 

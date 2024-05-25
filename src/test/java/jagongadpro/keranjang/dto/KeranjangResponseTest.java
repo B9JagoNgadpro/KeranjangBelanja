@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeranjangResponseTest {
+ class KeranjangResponseTest {
 
     @Test
-    public void testKeranjangResponseConstructorAndGetters() {
+     void testKeranjangResponseConstructorAndGetters() {
         Map<String, Integer> items = new HashMap<>();
         items.put("item1", 2);
 
@@ -20,7 +20,7 @@ public class KeranjangResponseTest {
     }
 
     @Test
-    public void testKeranjangResponseSetters() {
+     void testKeranjangResponseSetters() {
         KeranjangResponse keranjangResponse = new KeranjangResponse();
         keranjangResponse.setEmail("test@example.com");
 

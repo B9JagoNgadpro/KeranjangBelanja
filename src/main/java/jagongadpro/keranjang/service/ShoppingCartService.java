@@ -25,6 +25,10 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ShoppingCartService {
+
+    private static final String EMAIL_NOT_FOUND_MESSAGE = "Keranjang dengan email tersebut tidak ditemukan.";
+    private static final String ITEM_NOT_FOUND_MESSAGE = "Item tidak ditemukan dalam keranjang.";
+
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
 
@@ -101,7 +105,7 @@ public class ShoppingCartService {
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null || !cart.getItems().containsKey(itemId)) {
-            throw new IllegalArgumentException("Item tidak ditemukan dalam keranjang.");
+            throw new IllegalArgumentException( ITEM_NOT_FOUND_MESSAGE);
         }
 
         cart.getItems().put(itemId, quantity);
@@ -117,7 +121,7 @@ public class ShoppingCartService {
     public KeranjangResponse deleteItem(String email, String itemId) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
-            throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
+            throw new IllegalArgumentException(EMAIL_NOT_FOUND_MESSAGE);
         }
 
         cart.getItems().remove(itemId);
@@ -137,7 +141,7 @@ public class ShoppingCartService {
     public KeranjangResponse decrementItem(String email, String itemId) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null || !cart.getItems().containsKey(itemId)) {
-            throw new IllegalArgumentException("Item tidak ditemukan dalam keranjang.");
+            throw new IllegalArgumentException( ITEM_NOT_FOUND_MESSAGE);
         }
 
         int currentQuantity = cart.getItems().get(itemId);
@@ -158,7 +162,7 @@ public class ShoppingCartService {
     public KeranjangResponse findCartByEmail(String email) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
-            throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
+            throw new IllegalArgumentException(EMAIL_NOT_FOUND_MESSAGE);
         }
 
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
@@ -167,7 +171,7 @@ public class ShoppingCartService {
     public KeranjangResponse clearCart(String email) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
-            throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
+            throw new IllegalArgumentException(EMAIL_NOT_FOUND_MESSAGE);
         }
 
         cart.getItems().clear();
@@ -177,7 +181,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
-    private Map<String, Double> getItemPrices() {
+    Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
                 gameApiProperties.getUrl(),
                 HttpMethod.GET,
