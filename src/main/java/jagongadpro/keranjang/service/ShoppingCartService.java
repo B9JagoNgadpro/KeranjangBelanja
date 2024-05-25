@@ -74,24 +74,21 @@ public class ShoppingCartService {
         return CompletableFuture.completedFuture(null);
     }
 
-    public ShoppingCart createCart(String email) {
-        ShoppingCart cart = new ShoppingCart(email);
-        return shoppingCartRepository.save(cart);
-    }
-
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
-            throw new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan.");
+            cart = new ShoppingCart(email);
         }
+        cart.getItems().merge(itemId, quantity, Integer::sum);
 
-        cart.getItems().put(itemId, cart.getItems().getOrDefault(itemId, 0) + quantity);
+        Map<String, Double> itemPrices = new HashMap<>();
+        Map<String, Integer> itemQuantities = new HashMap<>();
+        cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
 
-        Map<String, Double> itemPrices = getItemPrices();
-        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
+        double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
         cart.setTotalPrice(totalPrice);
 
-        shoppingCartRepository.save(cart);
+        cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
