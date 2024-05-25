@@ -1,26 +1,22 @@
 package jagongadpro.keranjang.service;
 
 import jagongadpro.keranjang.config.GameApiProperties;
+import jagongadpro.keranjang.dto.GameResponse;
 import jagongadpro.keranjang.dto.KeranjangResponse;
+import jagongadpro.keranjang.dto.WebResponse;
 import jagongadpro.keranjang.model.ShoppingCart;
 import jagongadpro.keranjang.repository.ShoppingCartRepository;
-import jagongadpro.keranjang.dto.GameResponse;
-import jagongadpro.keranjang.dto.WebResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -29,23 +25,13 @@ public class ShoppingCartService {
     private static final String EMAIL_NOT_FOUND_MESSAGE = "Keranjang dengan email tersebut tidak ditemukan.";
     private static final String ITEM_NOT_FOUND_MESSAGE = "Item tidak ditemukan dalam keranjang.";
 
-    @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final BillingStrategy discountStrategy;
+    private final BillingStrategy normalStrategy;
+    private final RestTemplate restTemplate;
+    private final GameApiProperties gameApiProperties;
 
     private BillingStrategy billingStrategy;
-
-    @Autowired
-    @Qualifier("discountPricingStrategy")
-    private BillingStrategy discountStrategy;
-
-    @Autowired
-    @Qualifier("normalPricingStrategy")
-    private BillingStrategy normalStrategy;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    private final GameApiProperties gameApiProperties;
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                @Qualifier("discountPricingStrategy") BillingStrategy discountStrategy,
@@ -105,7 +91,7 @@ public class ShoppingCartService {
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null || !cart.getItems().containsKey(itemId)) {
-            throw new IllegalArgumentException( ITEM_NOT_FOUND_MESSAGE);
+            throw new IllegalArgumentException(ITEM_NOT_FOUND_MESSAGE);
         }
 
         cart.getItems().put(itemId, quantity);
@@ -141,7 +127,7 @@ public class ShoppingCartService {
     public KeranjangResponse decrementItem(String email, String itemId) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null || !cart.getItems().containsKey(itemId)) {
-            throw new IllegalArgumentException( ITEM_NOT_FOUND_MESSAGE);
+            throw new IllegalArgumentException(ITEM_NOT_FOUND_MESSAGE);
         }
 
         int currentQuantity = cart.getItems().get(itemId);
