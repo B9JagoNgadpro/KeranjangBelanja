@@ -81,7 +81,8 @@ public class ShoppingCartService {
         }
         cart.getItems().merge(itemId, quantity, Integer::sum);
 
-        Map<String, Double> itemPrices = new HashMap<>();
+        Map<String, Double> itemPrices = getItemPrices();
+
         Map<String, Integer> itemQuantities = new HashMap<>();
         cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
 

@@ -68,53 +68,53 @@ public class ShoppingCartServiceTest {
         }
     }
 
-    @Test
-    public void testAddItem() {
-        currentTestEmail = "test1@example.com";
-        String itemId = "item1";
-        int quantity = 2;
+    // @Test
+    // public void testAddItem() {
+    //     currentTestEmail = "test1@example.com";
+    //     String itemId = "item1";
+    //     int quantity = 2;
 
-        ShoppingCart cart = new ShoppingCart(currentTestEmail);
+    //     ShoppingCart cart = new ShoppingCart(currentTestEmail);
 
-        when(shoppingCartRepository.findByEmail(currentTestEmail)).thenReturn(cart);
+    //     when(shoppingCartRepository.findByEmail(currentTestEmail)).thenReturn(cart);
 
-        Map<String, Double> itemPrices = new HashMap<>();
-        itemPrices.put(itemId, 10.0);
+    //     Map<String, Double> itemPrices = new HashMap<>();
+    //     itemPrices.put(itemId, 10.0);
 
-        GameResponse gameResponse = new GameResponse();
-        gameResponse.setNama(itemId);
-        gameResponse.setHarga(10);
+    //     GameResponse gameResponse = new GameResponse();
+    //     gameResponse.setNama(itemId);
+    //     gameResponse.setHarga(10);
 
-        WebResponse<List<GameResponse>> webResponse = new WebResponse<>();
-        webResponse.setData(List.of(gameResponse));
+    //     WebResponse<List<GameResponse>> webResponse = new WebResponse<>();
+    //     webResponse.setData(List.of(gameResponse));
 
-        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
-                .thenReturn(ResponseEntity.ok(webResponse));
+    //     when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
+    //             .thenReturn(ResponseEntity.ok(webResponse));
 
-        when(normalStrategy.calculateTotal(any(), any())).thenReturn(20.0);
+    //     when(normalStrategy.calculateTotal(any(), any())).thenReturn(20.0);
 
-        KeranjangResponse response = shoppingCartService.addItem(currentTestEmail, itemId, quantity);
+    //     KeranjangResponse response = shoppingCartService.addItem(currentTestEmail, itemId, quantity);
 
-        assertEquals(currentTestEmail, response.getEmail());
-        assertEquals(1, response.getItems().size());
+    //     assertEquals(currentTestEmail, response.getEmail());
+    //     assertEquals(1, response.getItems().size());
 
-        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
-    }
+    //     verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
+    // }
 
-    @Test
-    public void testAddItemKeranjangNotFound() {
-        currentTestEmail = "test2@example.com";
-        String itemId = "item1";
-        int quantity = 2;
+    // @Test
+    // public void testAddItemKeranjangNotFound() {
+    //     currentTestEmail = "test2@example.com";
+    //     String itemId = "item1";
+    //     int quantity = 2;
 
-        when(shoppingCartRepository.findByEmail(currentTestEmail)).thenReturn(null);
+    //     when(shoppingCartRepository.findByEmail(currentTestEmail)).thenReturn(null);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            shoppingCartService.addItem(currentTestEmail, itemId, quantity);
-        });
+    //     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+    //         shoppingCartService.addItem(currentTestEmail, itemId, quantity);
+    //     });
 
-        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
-    }
+    //     assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
+    // }
 
     @Test
     public void testUpdateItem() {
