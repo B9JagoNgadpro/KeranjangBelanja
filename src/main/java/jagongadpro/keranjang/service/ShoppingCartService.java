@@ -78,6 +78,8 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             cart = new ShoppingCart(email);
+        } else {
+            cart.setEmail(email); 
         }
         cart.getItems().merge(itemId, quantity, Integer::sum);
     
@@ -91,7 +93,7 @@ public class ShoppingCartService {
     
         cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
-    }    
+    }      
 
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
