@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -87,6 +88,19 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
+    public void testAddItemNewCart() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
+
+        KeranjangResponse response = shoppingCartService.addItem("newuser@example.com", "item1", 1);
+
+        assertEquals("newuser@example.com", response.getEmail());
+        assertEquals(1, response.getItems().get("item1"));
+
+        verify(shoppingCartRepository, times(1)).save(any(ShoppingCart.class));
+    }
+
+    @Test
     public void testUpdateItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(30000.0);
 
@@ -94,6 +108,28 @@ public class ShoppingCartServiceTest {
 
         assertEquals("test@example.com", response.getEmail());
         assertEquals(3, response.getItems().get("item1"));
+    }
+
+    @Test
+    public void testUpdateItemNotFound() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.updateItem("test@example.com", "item1", 3);
+        });
+
+        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateItemItemNotFound() {
+        cart.getItems().clear();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.updateItem("test@example.com", "item1", 3);
+        });
+
+        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
     }
 
     @Test
@@ -108,6 +144,17 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
+    public void testDeleteItemNotFound() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.deleteItem("test@example.com", "item1");
+        });
+
+        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
+    }
+
+    @Test
     public void testIncrementItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
 
@@ -118,14 +165,71 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    public void testDecrementItem() {
+    public void testDecrementItemRemoveItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
+        cart.getItems().put("item1", 1);
 
         KeranjangResponse response = shoppingCartService.decrementItem("test@example.com", "item1");
 
         assertEquals("test@example.com", response.getEmail());
         assertFalse(response.getItems().containsKey("item1"));
         assertEquals(0.0, response.getTotalPrice());
+    }
+
+    @Test
+    public void testDecrementItemDecreaseQuantity() {
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
+        cart.getItems().put("item1", 2);
+
+        KeranjangResponse response = shoppingCartService.decrementItem("test@example.com", "item1");
+
+        assertEquals("test@example.com", response.getEmail());
+        assertTrue(response.getItems().containsKey("item1"));
+        assertEquals(1, response.getItems().get("item1"));
+    }
+
+    @Test
+    public void testDecrementItemNotFound() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.decrementItem("test@example.com", "item1");
+        });
+
+        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+    }
+
+    @Test
+    public void testDecrementItemItemNotFound() {
+        cart.getItems().clear();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.decrementItem("test@example.com", "item1");
+        });
+
+        assertEquals("Item tidak ditemukan dalam keranjang.", exception.getMessage());
+    }
+
+    @Test
+    public void testFindCartByEmailNotFound() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.findCartByEmail("test@example.com");
+        });
+
+        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
+    }
+
+    @Test
+    public void testClearCartNotFound() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.clearCart("test@example.com");
+        });
+
+        assertEquals("Keranjang dengan email tersebut tidak ditemukan.", exception.getMessage());
     }
 
     @Test
@@ -148,4 +252,22 @@ public class ShoppingCartServiceTest {
         assertEquals(0.0, response.getTotalPrice());
     }
 
+    @Test
+    public void testApplyDiscountsToAllCarts() throws Exception {
+        ShoppingCart anotherCart = new ShoppingCart("another@example.com");
+        anotherCart.getItems().put("item2", 1);
+        anotherCart.setTotalPrice(20000);
+
+        when(shoppingCartRepository.findAll()).thenReturn(Arrays.asList(cart, anotherCart));
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(5000.0, 15000.0);
+
+        CompletableFuture<Void> future = shoppingCartService.applyDiscountsToAllCarts();
+        future.get();
+
+        verify(shoppingCartRepository, times(1)).save(cart);
+        verify(shoppingCartRepository, times(1)).save(anotherCart);
+
+        assertEquals(5000.0, cart.getTotalPrice());
+        assertEquals(15000.0, anotherCart.getTotalPrice());
+    }
 }
