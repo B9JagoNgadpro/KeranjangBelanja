@@ -93,7 +93,7 @@ public class ShoppingCartService {
     
         cart = shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
-    }      
+    }
 
     public KeranjangResponse updateItem(String email, String itemId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
