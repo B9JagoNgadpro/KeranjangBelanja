@@ -78,22 +78,23 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             cart = new ShoppingCart(email);
+            cart = shoppingCartRepository.save(cart);
         }
-    
+
         cart.setEmail(email);
-    
+
+        // Update atau tambah item dalam keranjang
         cart.getItems().merge(itemId, quantity, Integer::sum);
-    
+
         Map<String, Double> itemPrices = getItemPrices();
-    
         Map<String, Integer> itemQuantities = new HashMap<>();
         cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
-    
+
         double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
         cart.setTotalPrice(totalPrice);
-    
+
         cart = shoppingCartRepository.save(cart);
-    
+
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 

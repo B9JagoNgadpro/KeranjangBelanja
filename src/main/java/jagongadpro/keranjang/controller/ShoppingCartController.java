@@ -30,7 +30,7 @@ public class ShoppingCartController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
+    
     @DeleteMapping("/remove")
     public ResponseEntity<Void> removeItem(@RequestParam String email, @RequestParam String itemId) {
         shoppingCartService.deleteItem(email, itemId);
