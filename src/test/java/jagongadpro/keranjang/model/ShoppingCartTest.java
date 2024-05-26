@@ -45,7 +45,7 @@ import java.util.Map;
     @Test
      void testSetTotalPrice() {
         ShoppingCart cart = new ShoppingCart();
-        cart.setTotalPrice(100.0);
+        cart.setTotalPrice(100);
         assertEquals(100.0, cart.getTotalPrice());
     }
 }

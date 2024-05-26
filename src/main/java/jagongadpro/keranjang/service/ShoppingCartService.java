@@ -57,7 +57,7 @@ public class ShoppingCartService {
         List<ShoppingCart> carts = shoppingCartRepository.findAll();
         for (ShoppingCart cart : carts) {
             Map<String, Double> itemPrices = getItemPrices();
-            double totalPrice = discountStrategy.calculateTotal(cart.getItems(), itemPrices);
+            int totalPrice = discountStrategy.calculateTotal(cart.getItems(), itemPrices);
             cart.setTotalPrice(totalPrice);
             shoppingCartRepository.save(cart);
         }
@@ -85,7 +85,7 @@ public class ShoppingCartService {
         Map<String, Integer> itemQuantities = new HashMap<>();
         cart.getItems().forEach((key, value) -> itemQuantities.put(String.valueOf(key), value));
 
-        double totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
+        int totalPrice = billingStrategy.calculateTotal(itemQuantities, itemPrices);
         cart.setTotalPrice(totalPrice);
 
         // Simpan kembali keranjang setelah menambahkan item
@@ -103,7 +103,7 @@ public class ShoppingCartService {
         cart.getItems().put(itemId, quantity);
 
         Map<String, Double> itemPrices = getItemPrices();
-        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
+        int totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
         cart.setTotalPrice(totalPrice);
 
         shoppingCartRepository.save(cart);
@@ -119,7 +119,7 @@ public class ShoppingCartService {
         cart.getItems().remove(itemId);
 
         Map<String, Double> itemPrices = getItemPrices();
-        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
+        int totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
         cart.setTotalPrice(totalPrice);
 
         shoppingCartRepository.save(cart);
@@ -144,7 +144,7 @@ public class ShoppingCartService {
         }
 
         Map<String, Double> itemPrices = getItemPrices();
-        double totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
+        int totalPrice = billingStrategy.calculateTotal(cart.getItems(), itemPrices);
         cart.setTotalPrice(totalPrice);
 
         shoppingCartRepository.save(cart);
@@ -167,7 +167,7 @@ public class ShoppingCartService {
         }
 
         cart.getItems().clear();
-        cart.setTotalPrice(0.0);
+        cart.setTotalPrice(0);
 
         shoppingCartRepository.save(cart);
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
@@ -184,7 +184,7 @@ public class ShoppingCartService {
         return new KeranjangResponse(newCart.getEmail(), newCart.getItems(), newCart.getTotalPrice());
     }
 
-    public double getTotalPrice(String email) {
+    public int getTotalPrice(String email) {
         ShoppingCart cart = shoppingCartRepository.findByEmail(email);
         if (cart == null) {
             throw new IllegalArgumentException(EMAIL_NOT_FOUND_MESSAGE);

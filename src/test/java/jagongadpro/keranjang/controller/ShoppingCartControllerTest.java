@@ -32,8 +32,8 @@ class ShoppingCartControllerTest {
 
     @BeforeEach
     void setUp() {
-        sampleResponse = new KeranjangResponse("test@example.com", Map.of("item1", 2), 200.0);
-        emptyResponse = new KeranjangResponse("test@example.com", Map.of(), 0.0);
+        sampleResponse = new KeranjangResponse("test@example.com", Map.of("item1", 2), 200);
+        emptyResponse = new KeranjangResponse("test@example.com", Map.of(), 0);
     }
 
     @Test
@@ -54,7 +54,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items.item1").value(2))
-                .andExpect(jsonPath("$.totalPrice").value(200.0));
+                .andExpect(jsonPath("$.totalPrice").value(200));
     }
 
     @Test
@@ -78,7 +78,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items.item1").value(2))
-                .andExpect(jsonPath("$.totalPrice").value(200.0));
+                .andExpect(jsonPath("$.totalPrice").value(200));
     }
 
     @Test
@@ -91,7 +91,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items.item1").value(2))
-                .andExpect(jsonPath("$.totalPrice").value(200.0));
+                .andExpect(jsonPath("$.totalPrice").value(200));
     }
 
     @Test
@@ -104,7 +104,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items.item1").value(2))
-                .andExpect(jsonPath("$.totalPrice").value(200.0));
+                .andExpect(jsonPath("$.totalPrice").value(200));
     }
 
     @Test
@@ -118,7 +118,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items.item1").value(2))
-                .andExpect(jsonPath("$.totalPrice").value(200.0));
+                .andExpect(jsonPath("$.totalPrice").value(200));
     }
 
     @Test
@@ -129,7 +129,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items.item1").value(2))
-                .andExpect(jsonPath("$.totalPrice").value(200.0));
+                .andExpect(jsonPath("$.totalPrice").value(200));
     }
 
     @Test
@@ -148,12 +148,12 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.items").isEmpty())
-                .andExpect(jsonPath("$.totalPrice").value(0.0));
+                .andExpect(jsonPath("$.totalPrice").value(0));
     }
 
     @Test
     void testCreateCart() throws Exception {
-        KeranjangResponse response = new KeranjangResponse("newuser@example.com", Map.of(), 0.0);
+        KeranjangResponse response = new KeranjangResponse("newuser@example.com", Map.of(), 0);
 
         when(shoppingCartService.createCart(anyString())).thenReturn(response);
 
@@ -162,7 +162,7 @@ class ShoppingCartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("newuser@example.com"))
                 .andExpect(jsonPath("$.items").isEmpty())
-                .andExpect(jsonPath("$.totalPrice").value(0.0));
+                .andExpect(jsonPath("$.totalPrice").value(0));
 
         verify(shoppingCartService, times(1)).createCart("newuser@example.com");
     }
@@ -180,11 +180,11 @@ class ShoppingCartControllerTest {
 
     @Test
     void testGetTotalPrice() throws Exception {
-        when(shoppingCartService.getTotalPrice(anyString())).thenReturn(200.0);
+        when(shoppingCartService.getTotalPrice(anyString())).thenReturn(200);
 
         mockMvc.perform(get("/api/cart/total/test@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("200.0"));
+                .andExpect(content().string("200"));
     }
 
     @Test

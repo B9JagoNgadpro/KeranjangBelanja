@@ -82,7 +82,7 @@ class ShoppingCartServiceTest {
 
     @Test
     void testAddItem() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000);
 
         KeranjangResponse response = shoppingCartService.addItem("test@example.com", "item1", 1);
 
@@ -93,7 +93,7 @@ class ShoppingCartServiceTest {
     @Test
     void testAddItemNewCart() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000);
 
         KeranjangResponse response = shoppingCartService.addItem("newuser@example.com", "item1", 1);
 
@@ -109,7 +109,7 @@ class ShoppingCartServiceTest {
 
         assertEquals("newuser@example.com", response.getEmail());
         assertTrue(response.getItems().isEmpty());
-        assertEquals(0.0, response.getTotalPrice());
+        assertEquals(0, response.getTotalPrice());
     }
 
     @Test
@@ -125,7 +125,7 @@ class ShoppingCartServiceTest {
 
     @Test
     void testUpdateItem() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(30000.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(30000);
 
         KeranjangResponse response = shoppingCartService.updateItem("test@example.com", "item1", 3);
 
@@ -157,13 +157,13 @@ class ShoppingCartServiceTest {
 
     @Test
     void testDeleteItem() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(0);
 
         KeranjangResponse response = shoppingCartService.deleteItem("test@example.com", "item1");
 
         assertEquals("test@example.com", response.getEmail());
         assertFalse(response.getItems().containsKey("item1"));
-        assertEquals(0.0, response.getTotalPrice());
+        assertEquals(0, response.getTotalPrice());
     }
 
     @Test
@@ -179,7 +179,7 @@ class ShoppingCartServiceTest {
 
     @Test
     void testIncrementItem() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000);
 
         KeranjangResponse response = shoppingCartService.incrementItem("test@example.com", "item1");
 
@@ -189,19 +189,19 @@ class ShoppingCartServiceTest {
 
     @Test
     void testDecrementItemRemoveItem() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(0);
         cart.getItems().put("item1", 1);
 
         KeranjangResponse response = shoppingCartService.decrementItem("test@example.com", "item1");
 
         assertEquals("test@example.com", response.getEmail());
         assertFalse(response.getItems().containsKey("item1"));
-        assertEquals(0.0, response.getTotalPrice());
+        assertEquals(0, response.getTotalPrice());
     }
 
     @Test
     void testDecrementItemDecreaseQuantity() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000);
         cart.getItems().put("item1", 2);
 
         KeranjangResponse response = shoppingCartService.decrementItem("test@example.com", "item1");
@@ -261,18 +261,18 @@ class ShoppingCartServiceTest {
 
         assertEquals("test@example.com", response.getEmail());
         assertEquals(1, response.getItems().get("item1"));
-        assertEquals(10000.0, response.getTotalPrice());
+        assertEquals(10000, response.getTotalPrice());
     }
 
     @Test
     void testClearCart() {
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(0);
 
         KeranjangResponse response = shoppingCartService.clearCart("test@example.com");
 
         assertEquals("test@example.com", response.getEmail());
         assertTrue(response.getItems().isEmpty());
-        assertEquals(0.0, response.getTotalPrice());
+        assertEquals(0, response.getTotalPrice());
     }
 
     @Test
@@ -282,7 +282,7 @@ class ShoppingCartServiceTest {
         anotherCart.setTotalPrice(20000);
 
         when(shoppingCartRepository.findAll()).thenReturn(Arrays.asList(cart, anotherCart));
-        when(discountStrategy.calculateTotal(any(), any())).thenReturn(5000.0, 15000.0);
+        when(discountStrategy.calculateTotal(any(), any())).thenReturn(5000, 15000);
 
         CompletableFuture<Void> future = shoppingCartService.applyDiscountsToAllCarts();
         future.get();
