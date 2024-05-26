@@ -53,6 +53,7 @@ public class ShoppingCartService {
     @Scheduled(cron = "0 0 0 1 * ?")
     @Async
     public CompletableFuture<Void> applyDiscountsToAllCarts() {
+        this.billingStrategy = discountStrategy; // Ganti strategi penagihan menjadi discountStrategy
         List<ShoppingCart> carts = shoppingCartRepository.findAll();
         for (ShoppingCart cart : carts) {
             Map<String, Double> itemPrices = getItemPrices();
@@ -61,6 +62,11 @@ public class ShoppingCartService {
             shoppingCartRepository.save(cart);
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    @Scheduled(cron = "0 0 0 2 * ?")
+    public void resetBillingStrategyToNormal() {
+        this.billingStrategy = normalStrategy;
     }
 
     public KeranjangResponse addItem(String email, String itemId, int quantity) {
