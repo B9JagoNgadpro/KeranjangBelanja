@@ -1,47 +1,44 @@
 package jagongadpro.keranjang.config;
 
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${request.queue}")
-    private String requestQueue;
-
-    @Value("${response.queue}")
-    private String responseQueue;
-
-    @Value("${exchange}")
-    private String exchange;
+    public static final String REQUEST_QUEUE = "cartRequestQueue";
+    public static final String RESPONSE_QUEUE = "cartResponseQueue";
+    public static final String EXCHANGE_NAME = "cartExchange";
+    public static final String REQUEST_ROUTING_KEY = "cart.request";
+    public static final String RESPONSE_ROUTING_KEY = "cart.response";
 
     @Bean
     public Queue requestQueue() {
-        return new Queue(requestQueue, false);
+        return new Queue(REQUEST_QUEUE, false);
     }
 
     @Bean
     public Queue responseQueue() {
-        return new Queue(responseQueue, false);
+        return new Queue(RESPONSE_QUEUE, false);
     }
 
     @Bean
-    public DirectExchange exchange() {
-        return new DirectExchange(exchange);
+    public TopicExchange exchange() {
+        return new TopicExchange(EXCHANGE_NAME);
     }
 
     @Bean
-    public Binding requestBinding(Queue requestQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(requestQueue).to(exchange).with(requestQueue.getName());
+    public Binding requestBinding(Queue requestQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(requestQueue).to(exchange).with(REQUEST_ROUTING_KEY);
     }
 
     @Bean
-    public Binding responseBinding(Queue responseQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(responseQueue).to(exchange).with(responseQueue.getName());
+    public Binding responseBinding(Queue responseQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(responseQueue).to(exchange).with(RESPONSE_ROUTING_KEY);
     }
 }
+
