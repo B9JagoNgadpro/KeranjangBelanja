@@ -167,6 +167,17 @@ public class ShoppingCartService {
         return new KeranjangResponse(cart.getEmail(), cart.getItems(), cart.getTotalPrice());
     }
 
+    public KeranjangResponse createCart(String email) {
+        ShoppingCart existingCart = shoppingCartRepository.findByEmail(email);
+        if (existingCart != null) {
+            throw new IllegalArgumentException("Keranjang dengan email ini sudah ada.");
+        }
+
+        ShoppingCart newCart = new ShoppingCart(email);
+        shoppingCartRepository.save(newCart);
+        return new KeranjangResponse(newCart.getEmail(), newCart.getItems(), newCart.getTotalPrice());
+    }
+
     Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
                 gameApiProperties.getUrl(),
