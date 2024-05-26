@@ -16,7 +16,7 @@ public class CartSubscriber {
         System.out.println("Received request to view cart for email: " + email);
         
         // Simulate fetching cart details
-        String cartDetails = "Cart details for naomi" ;
+        String cartDetails = "Cart details for " ;
 
         // Send response back
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.RESPONSE_ROUTING_KEY, cartDetails);
