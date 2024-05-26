@@ -177,4 +177,21 @@ class ShoppingCartControllerTest {
 
         verify(shoppingCartService, times(1)).createCart("test@example.com");
     }
+
+    @Test
+    void testGetTotalPrice() throws Exception {
+        when(shoppingCartService.getTotalPrice(anyString())).thenReturn(200.0);
+
+        mockMvc.perform(get("/api/cart/total/test@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("200.0"));
+    }
+
+    @Test
+    void testGetTotalPrice_notFound() throws Exception {
+        when(shoppingCartService.getTotalPrice(anyString())).thenThrow(new IllegalArgumentException("Keranjang dengan email tersebut tidak ditemukan."));
+
+        mockMvc.perform(get("/api/cart/total/test@example.com"))
+                .andExpect(status().isNotFound());
+    }
 }
