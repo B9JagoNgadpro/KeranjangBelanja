@@ -81,9 +81,9 @@ public class ShoppingCartController {
     }
 
     @GetMapping("/total/{email}")
-    public ResponseEntity<Double> getTotalPrice(@PathVariable String email) {
+    public ResponseEntity<Integer> getTotalPrice(@PathVariable String email) {
         try {
-            double totalPrice = shoppingCartService.getTotalPrice(email);
+            int totalPrice = shoppingCartService.getTotalPrice(email);
             return ResponseEntity.ok(totalPrice);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
