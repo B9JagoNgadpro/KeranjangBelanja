@@ -99,7 +99,6 @@ class ShoppingCartServiceTest {
 
         assertEquals("newuser@example.com", response.getEmail());
         assertEquals(1, response.getItems().get("item1"));
-
     }
 
     @Test
@@ -328,5 +327,22 @@ class ShoppingCartServiceTest {
         Map<String, Double> prices = shoppingCartService.getItemPrices();
         assertFalse(prices.isEmpty());
         assertEquals(10000.0, prices.get("8eb561a5-eed0-416e-965b-9b318ee1869e"));
+    }
+
+    @Test
+    void testGetTotalPrice() {
+        double totalPrice = shoppingCartService.getTotalPrice("test@example.com");
+        assertEquals(10000.0, totalPrice);
+    }
+
+    @Test
+    void testGetTotalPriceNotFound() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.getTotalPrice("test@example.com");
+        });
+
+        assertEquals(EMAIL_NOT_FOUND_MESSAGE, exception.getMessage());
     }
 }

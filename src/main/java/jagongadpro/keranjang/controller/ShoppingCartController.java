@@ -79,4 +79,14 @@ public class ShoppingCartController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @GetMapping("/total/{email}")
+    public ResponseEntity<Double> getTotalPrice(@PathVariable String email) {
+        try {
+            double totalPrice = shoppingCartService.getTotalPrice(email);
+            return ResponseEntity.ok(totalPrice);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

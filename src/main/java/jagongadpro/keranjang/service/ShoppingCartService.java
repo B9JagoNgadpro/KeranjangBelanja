@@ -184,6 +184,14 @@ public class ShoppingCartService {
         return new KeranjangResponse(newCart.getEmail(), newCart.getItems(), newCart.getTotalPrice());
     }
 
+    public double getTotalPrice(String email) {
+        ShoppingCart cart = shoppingCartRepository.findByEmail(email);
+        if (cart == null) {
+            throw new IllegalArgumentException(EMAIL_NOT_FOUND_MESSAGE);
+        }
+        return cart.getTotalPrice();
+    }
+
     Map<String, Double> getItemPrices() {
         ResponseEntity<WebResponse<List<GameResponse>>> response = restTemplate.exchange(
                 gameApiProperties.getUrl(),
