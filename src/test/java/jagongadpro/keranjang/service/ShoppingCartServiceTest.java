@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
- class ShoppingCartServiceTest {
+class ShoppingCartServiceTest {
 
     private static final String EMAIL_NOT_FOUND_MESSAGE = "Keranjang dengan email tersebut tidak ditemukan.";
     private static final String ITEM_NOT_FOUND_MESSAGE = "Item tidak ditemukan dalam keranjang.";
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.*;
     private Map<String, Double> itemPrices;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         cart = new ShoppingCart("test@example.com");
         cart.getItems().put("item1", 1);
@@ -81,7 +81,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testAddItem() {
+    void testAddItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
 
         KeranjangResponse response = shoppingCartService.addItem("test@example.com", "item1", 1);
@@ -91,7 +91,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testAddItemNewCart() {
+    void testAddItemNewCart() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
 
@@ -103,7 +103,29 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testUpdateItem() {
+    void testCreateCart() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
+
+        KeranjangResponse response = shoppingCartService.createCart("newuser@example.com");
+
+        assertEquals("newuser@example.com", response.getEmail());
+        assertTrue(response.getItems().isEmpty());
+        assertEquals(0.0, response.getTotalPrice());
+    }
+
+    @Test
+    void testCreateCartAlreadyExists() {
+        when(shoppingCartRepository.findByEmail(anyString())).thenReturn(cart);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCartService.createCart("test@example.com");
+        });
+
+        assertEquals("Keranjang dengan email ini sudah ada.", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(30000.0);
 
         KeranjangResponse response = shoppingCartService.updateItem("test@example.com", "item1", 3);
@@ -113,7 +135,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testUpdateItemNotFound() {
+    void testUpdateItemNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -124,7 +146,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testUpdateItemItemNotFound() {
+    void testUpdateItemItemNotFound() {
         cart.getItems().clear();
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -135,7 +157,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testDeleteItem() {
+    void testDeleteItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
 
         KeranjangResponse response = shoppingCartService.deleteItem("test@example.com", "item1");
@@ -146,7 +168,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testDeleteItemNotFound() {
+    void testDeleteItemNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -157,7 +179,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testIncrementItem() {
+    void testIncrementItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(20000.0);
 
         KeranjangResponse response = shoppingCartService.incrementItem("test@example.com", "item1");
@@ -167,7 +189,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testDecrementItemRemoveItem() {
+    void testDecrementItemRemoveItem() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
         cart.getItems().put("item1", 1);
 
@@ -179,7 +201,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testDecrementItemDecreaseQuantity() {
+    void testDecrementItemDecreaseQuantity() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(10000.0);
         cart.getItems().put("item1", 2);
 
@@ -191,7 +213,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testDecrementItemNotFound() {
+    void testDecrementItemNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -202,7 +224,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testDecrementItemItemNotFound() {
+    void testDecrementItemItemNotFound() {
         cart.getItems().clear();
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -213,7 +235,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testFindCartByEmailNotFound() {
+    void testFindCartByEmailNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -224,7 +246,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testClearCartNotFound() {
+    void testClearCartNotFound() {
         when(shoppingCartRepository.findByEmail(anyString())).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -235,7 +257,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testFindCartByEmail() {
+    void testFindCartByEmail() {
         KeranjangResponse response = shoppingCartService.findCartByEmail("test@example.com");
 
         assertEquals("test@example.com", response.getEmail());
@@ -244,7 +266,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testClearCart() {
+    void testClearCart() {
         when(discountStrategy.calculateTotal(any(), any())).thenReturn(0.0);
 
         KeranjangResponse response = shoppingCartService.clearCart("test@example.com");
@@ -255,7 +277,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testApplyDiscountsToAllCarts() throws Exception {
+    void testApplyDiscountsToAllCarts() throws Exception {
         ShoppingCart anotherCart = new ShoppingCart("another@example.com");
         anotherCart.getItems().put("item2", 1);
         anotherCart.setTotalPrice(20000);
@@ -272,7 +294,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testGetItemPricesWhenResponseIsNull() {
+    void testGetItemPricesWhenResponseIsNull() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(null);
 
@@ -281,7 +303,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testGetItemPricesWhenResponseBodyIsNull() {
+    void testGetItemPricesWhenResponseBodyIsNull() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(null));
 
@@ -290,7 +312,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testGetItemPricesWhenResponseBodyDataIsNull() {
+    void testGetItemPricesWhenResponseBodyDataIsNull() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(new WebResponse<>(null, null)));
 
@@ -299,7 +321,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-     void testGetItemPricesWhenResponseHasData() {
+    void testGetItemPricesWhenResponseHasData() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(webResponse));
 

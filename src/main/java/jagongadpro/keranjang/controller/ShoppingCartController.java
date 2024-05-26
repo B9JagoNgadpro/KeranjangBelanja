@@ -69,4 +69,14 @@ public class ShoppingCartController {
         KeranjangResponse response = shoppingCartService.clearCart(email);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/create/{email}")
+    public ResponseEntity<KeranjangResponse> createCart(@PathVariable String email) {
+        try {
+            KeranjangResponse response = shoppingCartService.createCart(email);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }
