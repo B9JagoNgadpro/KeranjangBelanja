@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
         itemPrices.put("item2", 20.0);
 
         // Menentukan perilaku mock
-        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(80.0);
+        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(80);
 
         // Menghitung total menggunakan mock
         double total = billingStrategy.calculateTotal(itemQuantities, itemPrices);
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
         // item2 tidak ada harga
 
         // Menentukan perilaku mock
-        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(20.0);
+        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(20);
 
         // Menghitung total menggunakan mock
         double total = billingStrategy.calculateTotal(itemQuantities, itemPrices);
@@ -75,7 +75,7 @@ import static org.mockito.Mockito.*;
         Map<String, Double> itemPrices = new HashMap<>();
 
         // Menentukan perilaku mock
-        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(0.0);
+        when(billingStrategy.calculateTotal(itemQuantities, itemPrices)).thenReturn(0);
 
         // Menghitung total menggunakan mock
         double total = billingStrategy.calculateTotal(itemQuantities, itemPrices);

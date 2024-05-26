@@ -14,5 +14,5 @@ import java.util.Map;
 public class KeranjangResponse {
     private String email;
     private Map<String, Integer> items;
-    private double totalPrice;
+    private Integer totalPrice;
 }

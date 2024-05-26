@@ -12,11 +12,11 @@ import java.util.Map;
         Map<String, Integer> items = new HashMap<>();
         items.put("item1", 2);
 
-        KeranjangResponse keranjangResponse = new KeranjangResponse("test@example.com", items, 100.0);
+        KeranjangResponse keranjangResponse = new KeranjangResponse("test@example.com", items, 100);
 
         assertEquals("test@example.com", keranjangResponse.getEmail());
         assertEquals(items, keranjangResponse.getItems());
-        assertEquals(100.0, keranjangResponse.getTotalPrice());
+        assertEquals(100, keranjangResponse.getTotalPrice());
     }
 
     @Test
@@ -28,10 +28,10 @@ import java.util.Map;
         items.put("item1", 2);
         keranjangResponse.setItems(items);
 
-        keranjangResponse.setTotalPrice(100.0);
+        keranjangResponse.setTotalPrice(100);
 
         assertEquals("test@example.com", keranjangResponse.getEmail());
         assertEquals(items, keranjangResponse.getItems());
-        assertEquals(100.0, keranjangResponse.getTotalPrice());
+        assertEquals(100, keranjangResponse.getTotalPrice());
     }
 }

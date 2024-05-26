@@ -23,17 +23,17 @@ public class ShoppingCart {
     private Map<String, Integer> items = new HashMap<>();
 
     @Column(name = "total_price")
-    private double totalPrice;
+    private int totalPrice;
 
     // Default constructor
     public ShoppingCart() {
         this.items = new HashMap<>();
-        this.totalPrice = 0.0;
+        this.totalPrice = 0;
     }
 
     public ShoppingCart(String email) {
         this.email = email;
         this.items = new HashMap<>();
-        this.totalPrice = 0.0;
+        this.totalPrice = 0;
     }
 }
